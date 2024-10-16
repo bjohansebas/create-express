@@ -1,0 +1,10 @@
+{
+    "extends": "@bjohansebas/config/tsconfig/base.json",
+    "compilerOptions": {
+      "target": "ES2022",
+      "resolveJsonModule": true,
+      "skipLibCheck": false,
+      "noImplicitThis": false
+    },
+    "exclude": ["dist", "node_modules"] 
+}
