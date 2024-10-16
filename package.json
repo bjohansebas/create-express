@@ -18,7 +18,7 @@
       "dev": "ncc build ./src/index.ts -w -o dist/",
       "build": "pnpm clean && ncc build ./src/index.ts -o ./dist/ --minify --no-cache --no-source-map-register",
       "prepublishOnly": "pnpm build",
-      "generate-docs": "node ../../scripts/generate-help-docs.mjs ."
+      "generate-docs": "node ./scripts/generate-help-docs.mjs ."
     },
     "devDependencies": {
       "@bjohansebas/config": "0.1.0",

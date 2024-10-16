@@ -8,7 +8,7 @@ import { checkUpdates } from "./utils/checkUpdates";
 
 export const program = new Command(packageJson.name)
 	.version(packageJson.version)
-	.usage(`${green("[command]")} ${green("[options]")}`)
+	.usage(`${green("[directory]")} ${green("[options]")}`)
 	.argument("[directory]")
 	.helpOption("-h, --help", "Display this help message.")
 	.option("--ts, --typescript", "Initialize as a TypeScript project. (default)")
