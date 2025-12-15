@@ -16,8 +16,12 @@
     "create-expressjs": "bin/index.js"
   },
   "type": "module",
-  "scripts": {},
+  "scripts": {
+    "lint": "biome check",
+    "lint:fix": "biome check --write"
+  },
   "devDependencies": {
+    "@biomejs/biome": "2.3.9",
     "@inquirer/prompts": "8.1.0",
     "commander": "14.0.2"
   },

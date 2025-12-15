@@ -3,7 +3,7 @@ export function getContext(projectName, options) {
     projectName: projectName,
     cwd: projectName?.trim(),
     installDependencies: options.install ?? true,
-  };
+  }
 
-  return context;
+  return context
 }
