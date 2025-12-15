@@ -1,38 +1,41 @@
 {
-    "name": "@expressjs/create",
-    "version": "0.0.1",
-    "private": true,
-    "license": "MIT",
-    "description": "Create Express apps with no build configuration",
-    "author": {
-      "email": "bjohansebas@gmail.com",
-      "name": "Sebastian Beltran"
-    },
-    "keywords": ["cli", "express"],
-    "bin": {
-      "create-expressjs": "bin/index.js"
-    },
-    "scripts": {
-      "generate-docs": "node ./scripts/generate-help-docs.mjs ."
-    },
-    "devDependencies": {
-      "commander": "12.1.0",
-      "ora": "8.1.0",
-      "picocolors": "1.0.1",
-      "prompts": "2.4.2"
-    },
-    "homepage": "https://github.com/bjohansebas/create-express",
-    "repository": {
-      "type": "git",
-      "url": "git+https://github.com/bjohansebas/create-express.git"
-    },
-    "bugs": {
-      "url": "https://github.com/bjohansebas/create-express/issues"
-    },
-    "engines": {
-      "node": ">=18.0.0"
-    },
-    "publishConfig": {
-      "access": "public"
-    }
+  "name": "@expressjs/create",
+  "version": "0.0.1",
+  "private": true,
+  "license": "MIT",
+  "description": "Create Express apps with no build configuration",
+  "author": {
+    "email": "bjohansebas@gmail.com",
+    "name": "Sebastian Beltran"
+  },
+  "keywords": [
+    "cli",
+    "express"
+  ],
+  "bin": {
+    "create-expressjs": "bin/index.js"
+  },
+  "type": "module",
+  "scripts": {},
+  "devDependencies": {
+    "@inquirer/prompts": "8.1.0",
+    "commander": "14.0.2"
+  },
+  "homepage": "https://github.com/bjohansebas/create-express",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bjohansebas/create-express.git"
+  },
+  "bugs": {
+    "url": "https://github.com/bjohansebas/create-express/issues"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "validate-npm-package-name": "^7.0.0"
+  }
 }
