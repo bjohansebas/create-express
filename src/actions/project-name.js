@@ -1,4 +1,5 @@
 import { resolve } from 'node:path'
+import { existsSync, mkdirSync } from 'node:fs'
 import { input } from '@inquirer/prompts'
 import validate from 'validate-npm-package-name'
 import { isEmpty } from '../utils/os.js'
@@ -12,6 +13,7 @@ export default async function projectNameAction(context) {
     })
 
     context.projectName = projectName
+    validation = validate(context.projectName)
   }
 
   let empty = isEmpty(context.projectName)
@@ -34,5 +36,10 @@ export default async function projectNameAction(context) {
   }
 
   context.cwd = resolve(context.projectName.trim())
+
+  if (!existsSync(context.cwd)) {
+    mkdirSync(context.cwd, { recursive: true })
+  }
+
   return context.projectName
 }
