@@ -1,5 +1,5 @@
-import { resolve } from 'node:path'
 import { existsSync, mkdirSync } from 'node:fs'
+import { resolve } from 'node:path'
 import { input } from '@inquirer/prompts'
 import validate from 'validate-npm-package-name'
 import { isEmpty } from '../utils/os.js'

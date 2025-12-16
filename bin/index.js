@@ -10,6 +10,8 @@ const program = new Command(packageJson.name)
   .usage(`[directory] [options]`)
   .argument('[directory]')
   .helpOption('-h, --help', 'Display this help message.')
+  .option('--git, -g', 'Initialize a git repository.')
+  .option('--no-git', 'Do not initialize a git repository.')
   .action((directory, options) => {
     actions(directory, options)
   })
