@@ -13,5 +13,9 @@ export default function nextStepsAction(context) {
   if (!context.install) {
     console.log(`  ${pm} install`)
   }
-  console.log(`  ${run} dev\n`)
+  console.log(`  ${run} dev`)
+  if (context.test && context.test !== 'none') {
+    console.log(`  ${run} test`)
+  }
+  console.log('')
 }

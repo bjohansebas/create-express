@@ -3,10 +3,12 @@ import { confirm } from '@inquirer/prompts'
 
 export default async function installAction(context) {
   if (context.install === undefined) {
-    context.install = await confirm({
-      message: `Do you want to install dependencies with ${context.packageManager}?`,
-      default: true,
-    })
+    context.install = context.yes
+      ? true
+      : await confirm({
+          message: `Do you want to install dependencies with ${context.packageManager}?`,
+          default: true,
+        })
   }
 
   if (!context.install) {

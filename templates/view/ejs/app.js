@@ -1,0 +1,11 @@
+import { fileURLToPath } from 'node:url'
+import express from 'express'
+
+export const app = express()
+
+app.set('view engine', 'ejs')
+app.set('views', fileURLToPath(new URL('./views', import.meta.url)))
+
+app.get('/', (_req, res) => {
+  res.render('index', { title: 'Express' })
+})

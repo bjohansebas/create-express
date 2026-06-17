@@ -10,11 +10,12 @@ export default async function gitAction(context) {
   }
 
   if (context.git === undefined) {
-    const git = await confirm({
-      message: 'Do you want to initialize a git repository?',
-      default: true,
-    })
-    context.git = git
+    context.git = context.yes
+      ? true
+      : await confirm({
+          message: 'Do you want to initialize a git repository?',
+          default: true,
+        })
   }
 
   if (context.git) {
