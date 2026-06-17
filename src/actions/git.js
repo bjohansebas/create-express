@@ -1,4 +1,4 @@
-import { spawn } from 'node:child_process'
+import { spawnSync } from 'node:child_process'
 import { existsSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { confirm } from '@inquirer/prompts'
@@ -26,7 +26,8 @@ export default async function gitAction(context) {
 }
 
 export function init({ cwd }) {
-  spawn('git', ['init'], { stdio: 'ignore', cwd })
-  spawn('git', ['add', '-A'], { stdio: 'ignore', cwd })
-  spawn('git', ['commit', '-m', '"feat: create project with create-express"'], { cwd, stdio: 'ignore' })
+  const options = { cwd, stdio: 'ignore' }
+  spawnSync('git', ['init'], options)
+  spawnSync('git', ['add', '-A'], options)
+  spawnSync('git', ['commit', '-m', 'feat: create project with create-express'], options)
 }

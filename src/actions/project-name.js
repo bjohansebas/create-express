@@ -1,45 +1,66 @@
 import { existsSync, mkdirSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { basename, resolve } from 'node:path'
 import { input } from '@inquirer/prompts'
 import validate from 'validate-npm-package-name'
 import { isEmpty } from '../utils/os.js'
 
+const DEFAULT_DIR = 'my-express-server'
+
+/**
+ * Coerce an arbitrary directory name into a valid npm package name.
+ *
+ * @param {string} name
+ * @returns {string}
+ */
+export function toValidPackageName(name) {
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/^[._]+/, '')
+    .replace(/[^a-z\d\-~]+/g, '-')
+}
+
+async function promptDirectory() {
+  return input({
+    message: 'Where should we create your project?',
+    default: DEFAULT_DIR,
+  })
+}
+
 export default async function projectNameAction(context) {
-  let validation = validate(context.projectName || '')
-  if (context.projectName == null) {
-    const projectName = await input({
-      message: 'What is the name of your project?',
-      default: 'my-express-server',
-    })
+  let targetDir = context.projectName?.trim() || (await promptDirectory())
 
-    context.projectName = projectName
-    validation = validate(context.projectName)
+  while (isEmpty(targetDir) === false) {
+    console.log(`The directory "${targetDir}" is not empty. Please choose a different location.`)
+    targetDir = await promptDirectory()
   }
 
-  let empty = isEmpty(context.projectName)
+  // The package name is derived from the final path segment, never the whole path.
+  let packageName = basename(resolve(targetDir))
 
-  while (empty === false || validation.validForOldPackages === false) {
-    if (empty === false) {
-      console.log(`The directory "${context.projectName}" is not empty. Please choose a different project name.`)
-    }
-    if (validation.validForOldPackages === false) {
-      console.log(`The project name "${context.projectName}" is not a valid npm package name`)
-    }
-    const projectName = await input({
+  // Like create-vite: only prompt when the derived name isn't valid, and offer
+  // the sanitized version as the default so the rename is visible and editable.
+  if (validate(packageName).validForNewPackages === false) {
+    packageName = await input({
       message: 'What is the name of your project?',
-      default: 'my-express-server',
+      default: toValidPackageName(packageName),
+      validate: (name) => {
+        const result = validate(name)
+        if (result.validForNewPackages) {
+          return true
+        }
+        return [...(result.errors ?? []), ...(result.warnings ?? [])][0] ?? 'Invalid npm package name'
+      },
     })
-
-    context.projectName = projectName
-    empty = isEmpty(context.projectName)
-    validation = validate(context.projectName)
   }
 
-  context.cwd = resolve(context.projectName.trim())
+  context.cwd = resolve(targetDir)
+  context.projectName = packageName
 
   if (!existsSync(context.cwd)) {
     mkdirSync(context.cwd, { recursive: true })
   }
 
-  return context.projectName
+  return context
 }
