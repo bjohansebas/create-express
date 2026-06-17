@@ -29,9 +29,15 @@ async function promptDirectory() {
 }
 
 export default async function projectNameAction(context) {
-  let targetDir = context.projectName?.trim() || (await promptDirectory())
+  let targetDir = context.projectName?.trim()
+  if (!targetDir) {
+    targetDir = context.yes ? DEFAULT_DIR : await promptDirectory()
+  }
 
   while (isEmpty(targetDir) === false) {
+    if (context.yes) {
+      throw new Error(`The directory "${targetDir}" is not empty.`)
+    }
     console.log(`The directory "${targetDir}" is not empty. Please choose a different location.`)
     targetDir = await promptDirectory()
   }
@@ -42,17 +48,22 @@ export default async function projectNameAction(context) {
   // Like create-vite: only prompt when the derived name isn't valid, and offer
   // the sanitized version as the default so the rename is visible and editable.
   if (validate(packageName).validForNewPackages === false) {
-    packageName = await input({
-      message: 'What is the name of your project?',
-      default: toValidPackageName(packageName),
-      validate: (name) => {
-        const result = validate(name)
-        if (result.validForNewPackages) {
-          return true
-        }
-        return [...(result.errors ?? []), ...(result.warnings ?? [])][0] ?? 'Invalid npm package name'
-      },
-    })
+    if (context.yes) {
+      const sanitized = toValidPackageName(packageName)
+      packageName = validate(sanitized).validForNewPackages ? sanitized : DEFAULT_DIR
+    } else {
+      packageName = await input({
+        message: 'What is the name of your project?',
+        default: toValidPackageName(packageName),
+        validate: (name) => {
+          const result = validate(name)
+          if (result.validForNewPackages) {
+            return true
+          }
+          return [...(result.errors ?? []), ...(result.warnings ?? [])][0] ?? 'Invalid npm package name'
+        },
+      })
+    }
   }
 
   context.cwd = resolve(targetDir)

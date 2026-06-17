@@ -1,0 +1,149 @@
+import assert from 'node:assert/strict'
+import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join } from 'node:path'
+import { beforeEach, mock, test } from 'node:test'
+
+// Stub the interactive prompts and child_process so the prompt-driven branches
+// can run without a TTY (or actually shelling out). The stubs read from mutable
+// state that each test sets up, so we only mock once.
+const answers = { input: [], select: [], confirm: [] }
+let spawnCalls = []
+let spawnStatus = 0
+
+mock.module('@inquirer/prompts', {
+  namedExports: {
+    input: async () => answers.input.shift(),
+    select: async () => answers.select.shift(),
+    confirm: async () => answers.confirm.shift(),
+  },
+})
+
+mock.module('node:child_process', {
+  namedExports: {
+    spawnSync: (command, args = []) => {
+      spawnCalls.push([command, ...args])
+      return { status: spawnStatus }
+    },
+  },
+})
+
+const { default: projectNameAction } = await import('../src/actions/project-name.js')
+const { default: selectFeaturesAction } = await import('../src/actions/select-features.js')
+const { default: gitAction } = await import('../src/actions/git.js')
+const { default: installAction } = await import('../src/actions/install.js')
+
+const tempDirs = []
+function tmp() {
+  const dir = mkdtempSync(join(tmpdir(), 'create-express-int-'))
+  tempDirs.push(dir)
+  return dir
+}
+
+beforeEach(() => {
+  answers.input = []
+  answers.select = []
+  answers.confirm = []
+  spawnCalls = []
+  spawnStatus = 0
+  while (tempDirs.length) {
+    rmSync(tempDirs.pop(), { recursive: true, force: true })
+  }
+})
+
+test('project-name: prompts for the directory when none is provided', async () => {
+  const target = join(tmp(), 'fresh-app')
+  answers.input = [target]
+
+  const context = { projectName: undefined, yes: false }
+  await projectNameAction(context)
+
+  assert.equal(context.projectName, 'fresh-app')
+  assert.ok(context.cwd.endsWith('fresh-app'))
+})
+
+test('project-name: re-prompts when the directory is not empty', async () => {
+  const busy = tmp()
+  writeFileSync(join(busy, 'file.txt'), 'x')
+  const fresh = join(tmp(), 'ok-app')
+  answers.input = [fresh]
+
+  const context = { projectName: busy, yes: false }
+  await projectNameAction(context)
+
+  assert.equal(context.projectName, 'ok-app')
+})
+
+test('project-name: prompts for a name when the basename is invalid', async () => {
+  const target = join(tmp(), 'Bad_Name')
+  answers.input = ['fixed-name']
+
+  const context = { projectName: target, yes: false }
+  await projectNameAction(context)
+
+  assert.equal(context.projectName, 'fixed-name')
+})
+
+test('select-features: falls back to prompts when no flags are given', async () => {
+  answers.select = ['js', 'ejs', 'eslint', 'vitest']
+
+  const context = { language: undefined, view: undefined, linter: undefined, test: undefined, yes: false }
+  await selectFeaturesAction(context)
+
+  assert.equal(context.language, 'js')
+  assert.equal(context.typescript, false)
+  assert.equal(context.view, 'ejs')
+  assert.equal(context.linter, 'eslint')
+  assert.equal(context.test, 'vitest')
+})
+
+test('git: initializes the repository when confirmed', async () => {
+  answers.confirm = [true]
+
+  const context = { cwd: tmp(), git: undefined, yes: false }
+  await gitAction(context)
+
+  assert.equal(context.git, true)
+  assert.ok(spawnCalls.some(([command]) => command === 'git'))
+})
+
+test('git: skips initialization when declined', async () => {
+  answers.confirm = [false]
+
+  const context = { cwd: tmp(), git: undefined, yes: false }
+  await gitAction(context)
+
+  assert.equal(context.git, false)
+  assert.equal(spawnCalls.length, 0)
+})
+
+test('install: installs with the package manager when confirmed', async () => {
+  answers.confirm = [true]
+  spawnStatus = 0
+
+  const context = { cwd: tmp(), install: undefined, yes: false, packageManager: 'npm' }
+  await installAction(context)
+
+  assert.equal(context.install, true)
+  assert.deepEqual(spawnCalls[0], ['npm', 'install'])
+})
+
+test('install: flags install as failed when the package manager errors', async () => {
+  answers.confirm = [true]
+  spawnStatus = 1
+
+  const context = { cwd: tmp(), install: undefined, yes: false, packageManager: 'pnpm' }
+  await installAction(context)
+
+  assert.equal(context.install, false)
+})
+
+test('install: skips installation when declined', async () => {
+  answers.confirm = [false]
+
+  const context = { cwd: tmp(), install: undefined, yes: false, packageManager: 'npm' }
+  await installAction(context)
+
+  assert.equal(context.install, false)
+  assert.equal(spawnCalls.length, 0)
+})
