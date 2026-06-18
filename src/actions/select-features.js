@@ -35,6 +35,7 @@ const VIEWS = [{ value: 'none', name: 'None (JSON API)' }, ...WEB_VIEWS]
 
 const LINTERS = [
   { value: 'biome', name: 'Biome' },
+  { value: 'oxlint', name: 'Oxlint' },
   { value: 'eslint', name: 'ESLint' },
   { value: 'none', name: 'None' },
 ]

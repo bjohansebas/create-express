@@ -39,7 +39,7 @@ npm create express@latest my-app -- --ts --view ejs --linter biome --test vitest
 | `--esm` / `--cjs` | Module system: ES modules (default) or CommonJS. |
 | `--example <name>` | Starter example: `minimal`, `api`, `web`, `mvc`. |
 | `--view <engine>` | View engine: `none`, `ejs`, `pug`, `handlebars`. |
-| `--linter <name>` | Linter: `none`, `biome`, `eslint`. |
+| `--linter <name>` | Linter: `none`, `biome`, `oxlint`, `eslint`. |
 | `--test <runner>` | Test runner: `none`, `vitest`, `node`, `mocha`. |
 | `--pm`, `--package-manager <name>` | Package manager: `npm`, `pnpm`, `yarn`, `bun` (defaults to the one that launched the CLI). |
 | `-g`, `--git` / `--no-git` | Initialize (or not) a git repository. |
