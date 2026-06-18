@@ -2,6 +2,11 @@ doctype html
 html(lang="en")
   head
     meta(charset="utf-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1")
     title Error
+    link(rel="stylesheet", href="/stylesheets/style.css")
   body
-    h1 #{status} - #{message}
+    main
+      p.status= status
+      p.tagline= message
+      a.button(href="/") Go back home →

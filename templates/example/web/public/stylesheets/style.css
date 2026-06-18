@@ -1,10 +1,77 @@
-body {
-  margin: 0;
-  padding: 2rem;
-  font-family: system-ui, sans-serif;
-  line-height: 1.5;
+/* Colors mirror the Express website design tokens (expressjs.com). */
+:root {
+  color-scheme: light dark;
+
+  --bg: light-dark(#ffffff, #0a0a0a);
+  --text: light-dark(#141414, #f6f6f6);
+  --text-secondary: light-dark(#525252, #eeeeee);
+  --button-bg: light-dark(#141414, #ffffff);
+  --button-text: light-dark(#ffffff, #000000);
+  --button-bg-hover: light-dark(#262626, #e5e5e5);
+  --link: #0ea5e9;
 }
 
-h1 {
-  color: #16a34a;
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 2rem;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+}
+
+main {
+  width: 100%;
+  max-width: 34rem;
+  text-align: center;
+}
+
+.status {
+  margin: 0;
+  font-size: clamp(2.5rem, 10vw, 4.5rem);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  color: var(--text);
+}
+
+.logo {
+  margin: 0;
+  line-height: 0;
+}
+
+.logo img {
+  width: min(100%, 16rem);
+  height: auto;
+}
+
+.tagline {
+  margin: 0.5rem 0 2rem;
+  font-size: 1.125rem;
+  color: var(--text-secondary);
+}
+
+.button {
+  display: inline-block;
+  padding: 0.7rem 1.4rem;
+  border-radius: 0.5rem;
+  background: var(--button-bg);
+  color: var(--button-text);
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s ease;
+}
+
+.button:hover {
+  background: var(--button-bg-hover);
+}
+
+a:not(.button) {
+  color: var(--link);
 }

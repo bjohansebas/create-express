@@ -2,8 +2,15 @@ doctype html
 html(lang="en")
   head
     meta(charset="utf-8")
+    meta(name="viewport", content="width=device-width, initial-scale=1")
     title= title
     link(rel="stylesheet", href="/stylesheets/style.css")
   body
-    h1 Hello, World!
-    p Welcome to #{title}.
+    main
+      h1.logo
+        a(href="https://expressjs.com", target="_blank", rel="noopener noreferrer")
+          picture
+            source(srcset="/images/logo-express-white.svg", media="(prefers-color-scheme: dark)")
+            img(src="/images/logo-express-black.svg", alt="Express")
+      p.tagline Fast, unopinionated, minimalist web framework for Node.js
+      a.button(href="https://expressjs.com/en/5x/api", target="_blank", rel="noopener noreferrer") Read the Express 5 docs →

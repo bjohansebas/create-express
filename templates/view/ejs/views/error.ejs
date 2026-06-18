@@ -2,9 +2,15 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Error</title>
+    <link rel="stylesheet" href="/stylesheets/style.css" />
   </head>
   <body>
-    <h1><%= status %> - <%= message %></h1>
+    <main>
+      <p class="status"><%= status %></p>
+      <p class="tagline"><%= message %></p>
+      <a class="button" href="/">Go back home &rarr;</a>
+    </main>
   </body>
 </html>
