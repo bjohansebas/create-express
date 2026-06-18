@@ -20,7 +20,8 @@
     "lint": "biome check",
     "lint:fix": "biome check --write",
     "test": "node --experimental-test-module-mocks --test \"test/**/*.test.js\"",
-    "test:coverage": "c8 node --experimental-test-module-mocks --test \"test/**/*.test.js\""
+    "test:coverage": "c8 node --experimental-test-module-mocks --test \"test/**/*.test.js\"",
+    "test:e2e": "node --test \"test/e2e/**/*.e2e.js\""
   },
   "files": [
     "bin",
