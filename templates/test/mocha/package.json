@@ -1,0 +1,10 @@
+{
+  "scripts": {
+    "test": "mocha",
+    "test:watch": "mocha --watch"
+  },
+  "devDependencies": {
+    "@types/mocha": "10",
+    "mocha": "11"
+  }
+}

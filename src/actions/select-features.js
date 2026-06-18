@@ -21,6 +21,7 @@ const TESTS = [
   { value: 'none', name: 'None' },
   { value: 'vitest', name: 'Vitest' },
   { value: 'node', name: 'Node.js (node:test)' },
+  { value: 'mocha', name: 'Mocha' },
 ]
 
 function assertChoice(key, value, choices) {

@@ -109,6 +109,22 @@ test('composes a project with the Node.js test runner and no extra deps', async 
   }
 })
 
+test('composes a project with Mocha and its config file', async () => {
+  const { context, cwd, pkg } = compose({ test: 'mocha' })
+  try {
+    await composeAction(context)
+
+    assert.ok(existsSync(join(cwd, 'app.test.js')))
+    assert.ok(existsSync(join(cwd, '.mocharc.json')))
+
+    const manifest = pkg()
+    assert.equal(manifest.scripts.test, 'mocha')
+    assert.ok('mocha' in manifest.devDependencies)
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
 test('composes a JavaScript project with pug + eslint', async () => {
   const { context, cwd, pkg } = compose({ view: 'pug', linter: 'eslint' })
   try {
