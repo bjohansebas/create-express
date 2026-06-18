@@ -1,4 +1,5 @@
-import { existsSync, readdirSync } from 'node:fs'
+import { existsSync, readdirSync, rmSync } from 'node:fs'
+import { join } from 'node:path'
 
 const VALID_PROJECT_DIRECTORY = [
   '.DS_Store',
@@ -43,4 +44,19 @@ export function isEmpty(dirPath) {
   })
 
   return conflicts.length === 0
+}
+
+/**
+ * Remove every entry in a directory except `.git`, so a fresh project can be
+ * scaffolded over it without losing the version history.
+ *
+ * @param {string} dirPath
+ */
+export function emptyDir(dirPath) {
+  for (const entry of readdirSync(dirPath)) {
+    if (entry === '.git') {
+      continue
+    }
+    rmSync(join(dirPath, entry), { recursive: true, force: true })
+  }
 }

@@ -1,8 +1,8 @@
 import { existsSync, mkdirSync } from 'node:fs'
 import { basename, resolve } from 'node:path'
-import { input } from '@inquirer/prompts'
+import { confirm, input } from '@inquirer/prompts'
 import validate from 'validate-npm-package-name'
-import { isEmpty } from '../utils/os.js'
+import { emptyDir, isEmpty } from '../utils/os.js'
 
 const DEFAULT_DIR = 'my-express-server'
 
@@ -45,12 +45,19 @@ export default async function projectNameAction(context) {
     targetDir = context.yes ? DEFAULT_DIR : await promptDirectory()
   }
 
-  while (isEmpty(targetDir) === false) {
+  let overwrite = context.force === true
+
+  while (isEmpty(targetDir) === false && overwrite === false) {
     if (context.yes) {
-      throw new Error(`The directory "${targetDir}" is not empty.`)
+      throw new Error(`The directory "${targetDir}" is not empty. Use --force to overwrite it.`)
     }
-    console.log(`The directory "${targetDir}" is not empty. Please choose a different location.`)
-    targetDir = await promptDirectory()
+    overwrite = await confirm({
+      message: `The directory "${targetDir}" is not empty. Remove existing files and continue?`,
+      default: false,
+    })
+    if (overwrite === false) {
+      targetDir = await promptDirectory()
+    }
   }
 
   // The package name is derived from the final path segment, never the whole path.
@@ -77,7 +84,11 @@ export default async function projectNameAction(context) {
   context.cwd = resolve(targetDir)
   context.projectName = packageName
 
-  if (!existsSync(context.cwd)) {
+  if (existsSync(context.cwd)) {
+    if (overwrite) {
+      emptyDir(context.cwd)
+    }
+  } else {
     mkdirSync(context.cwd, { recursive: true })
   }
 

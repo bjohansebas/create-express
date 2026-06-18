@@ -10,6 +10,7 @@ export function getContext(projectName, options) {
     test: options.test,
     git: options.git,
     install: options.install,
+    force: options.force ?? false,
     yes: options.yes ?? false,
     packageManager: options.packageManager,
   }

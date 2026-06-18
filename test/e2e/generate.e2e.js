@@ -31,8 +31,8 @@ const COMBOS = [
     build: false,
   },
   {
-    name: 'CJS JS mvc + oxlint + mocha',
-    flags: ['--js', '--cjs', '--example', 'mvc', '--view', 'none', '--linter', 'oxlint', '--test', 'mocha'],
+    name: 'CJS JS mvc + pug + oxlint + mocha',
+    flags: ['--js', '--cjs', '--example', 'mvc', '--view', 'pug', '--linter', 'oxlint', '--test', 'mocha'],
     build: false,
   },
   {

@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, mock, test } from 'node:test'
@@ -141,6 +141,18 @@ test('projectNameAction with --yes throws on a non-empty directory', async () =>
   writeFileSync(join(dir, 'file.txt'), 'x')
 
   await assert.rejects(projectNameAction({ projectName: dir, yes: true }), /is not empty/)
+})
+
+test('projectNameAction with --force clears a non-empty directory but keeps .git', async () => {
+  const dir = tmp()
+  writeFileSync(join(dir, 'old.txt'), 'x')
+  mkdirSync(join(dir, '.git'))
+
+  const context = { projectName: dir, force: true, yes: true }
+  await projectNameAction(context)
+
+  assert.ok(!existsSync(join(dir, 'old.txt')), 'existing files are removed')
+  assert.ok(existsSync(join(dir, '.git')), '.git is preserved')
 })
 
 test('selectFeaturesAction defaults the view engine for the web starter', async () => {

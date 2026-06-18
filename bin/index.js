@@ -24,6 +24,7 @@ const program = new Command(packageJson.name)
   .option('--pm, --package-manager <name>', 'Package manager to use (npm, pnpm, yarn, bun).')
   .option('-i, --install', 'Install dependencies.')
   .option('--no-install', 'Do not install dependencies.')
+  .option('-f, --force', 'Overwrite the target directory if it is not empty (keeps .git).')
   .option('-y, --yes', 'Skip prompts and use defaults for any option not provided.')
   .action(async (directory, options, command) => {
     try {

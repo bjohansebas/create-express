@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict'
-import { mkdtempSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { beforeEach, mock, test } from 'node:test'
@@ -73,18 +73,6 @@ test('project-name: prompts for the directory when none is provided', async () =
   assert.ok(context.cwd.endsWith('fresh-app'))
 })
 
-test('project-name: re-prompts when the directory is not empty', async () => {
-  const busy = tmp()
-  writeFileSync(join(busy, 'file.txt'), 'x')
-  const fresh = join(tmp(), 'ok-app')
-  answers.input = [fresh]
-
-  const context = { projectName: busy, yes: false }
-  await projectNameAction(context)
-
-  assert.equal(context.projectName, 'ok-app')
-})
-
 test('project-name: prompts for a name (rejecting invalid input) when the basename is invalid', async () => {
   const target = join(tmp(), 'Bad_Name')
   // First answer is still invalid (rejected by `validate`), second one is accepted.
@@ -94,6 +82,31 @@ test('project-name: prompts for a name (rejecting invalid input) when the basena
   await projectNameAction(context)
 
   assert.equal(context.projectName, 'fixed-name')
+})
+
+test('project-name: clears the directory when overwrite is confirmed', async () => {
+  const dir = tmp()
+  writeFileSync(join(dir, 'old.txt'), 'x')
+  answers.confirm = [true]
+
+  const context = { projectName: dir, yes: false }
+  await projectNameAction(context)
+
+  assert.ok(!existsSync(join(dir, 'old.txt')), 'existing files are removed')
+})
+
+test('project-name: re-prompts for a location when overwrite is declined', async () => {
+  const busy = tmp()
+  writeFileSync(join(busy, 'old.txt'), 'x')
+  const fresh = join(tmp(), 'fresh-app')
+  answers.confirm = [false]
+  answers.input = [fresh]
+
+  const context = { projectName: busy, yes: false }
+  await projectNameAction(context)
+
+  assert.equal(context.projectName, 'fresh-app')
+  assert.ok(existsSync(join(busy, 'old.txt')), 'the busy directory is left untouched')
 })
 
 test('select-features: falls back to prompts when no flags are given', async () => {

@@ -36,6 +36,7 @@ export function resolveOptions(options, getOptionSource) {
     packageManager: options.packageManager,
     git: explicit('git'),
     install: explicit('install'),
+    force: options.force,
     yes: options.yes,
   }
 }

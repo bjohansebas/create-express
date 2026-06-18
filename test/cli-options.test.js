@@ -13,6 +13,10 @@ test('resolveOptions forwards the package manager flag', () => {
   assert.equal(resolveOptions({ packageManager: 'bun' }, () => 'cli').packageManager, 'bun')
 })
 
+test('resolveOptions forwards the force flag', () => {
+  assert.equal(resolveOptions({ force: true }, () => 'cli').force, true)
+})
+
 test('resolveOptions maps the module flags', () => {
   assert.equal(resolveOptions({ esm: true }, () => 'cli').module, 'esm')
   assert.equal(resolveOptions({ cjs: true }, () => 'cli').module, 'cjs')

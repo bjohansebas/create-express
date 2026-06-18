@@ -44,6 +44,7 @@ npm create express@latest my-app -- --ts --view ejs --linter biome --test vitest
 | `--pm`, `--package-manager <name>` | Package manager: `npm`, `pnpm`, `yarn`, `bun` (defaults to the one that launched the CLI). |
 | `-g`, `--git` / `--no-git` | Initialize (or not) a git repository. |
 | `-i`, `--install` / `--no-install` | Install (or not) dependencies. |
+| `-f`, `--force` | Overwrite the target directory if it is not empty (keeps `.git`). |
 | `-y`, `--yes` | Skip prompts and use defaults for any option not provided. |
 | `-h`, `--help` | Display the help message. |
 
