@@ -85,6 +85,8 @@ test('nextStepsAction prints cd/install/test lines when needed', () => {
   assert.match(text, /pnpm install/)
   assert.match(text, /pnpm dev/)
   assert.match(text, /pnpm test/)
+  // The Express ASCII banner is printed once the process finishes.
+  assert.match(text, /\|_____\//)
 })
 
 test('nextStepsAction omits cd/install when in place and already installed', () => {
