@@ -322,6 +322,18 @@ test('pins the running Node version in .nvmrc and devEngines', async () => {
   }
 })
 
+test('adds a Dockerfile and .dockerignore when docker is enabled', async () => {
+  const { context, cwd } = compose({ docker: true })
+  try {
+    await composeAction(context)
+
+    assert.ok(existsSync(join(cwd, 'Dockerfile')))
+    assert.ok(existsSync(join(cwd, '.dockerignore')), '_dockerignore should be renamed')
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
 test('composes a project with Mocha and its config file', async () => {
   const { context, cwd, pkg } = compose({ test: 'mocha' })
   try {

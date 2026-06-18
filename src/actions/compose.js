@@ -22,6 +22,7 @@ const TEMPLATES_DIR = fileURLToPath(new URL('../../templates', import.meta.url))
 const RENAME_FILES = {
   _gitignore: '.gitignore',
   _npmrc: '.npmrc',
+  _dockerignore: '.dockerignore',
 }
 
 const IGNORED_ENTRIES = new Set(['node_modules'])
@@ -45,6 +46,9 @@ function fragmentsFor(context) {
   }
   if (context.test && context.test !== 'none') {
     fragments.push(`test/${context.test}`)
+  }
+  if (context.docker) {
+    fragments.push('docker')
   }
 
   return fragments

@@ -8,6 +8,7 @@ export function getContext(projectName, options) {
     view: options.view,
     linter: options.linter,
     test: options.test,
+    docker: options.docker,
     git: options.git,
     install: options.install,
     force: options.force ?? false,

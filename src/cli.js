@@ -33,6 +33,7 @@ export function resolveOptions(options, getOptionSource) {
     view: options.view,
     linter: options.linter,
     test: options.test,
+    docker: explicit('docker'),
     packageManager: options.packageManager,
     git: explicit('git'),
     install: explicit('install'),

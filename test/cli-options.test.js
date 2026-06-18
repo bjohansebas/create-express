@@ -23,10 +23,15 @@ test('resolveOptions maps the module flags', () => {
   assert.equal(resolveOptions({}, () => 'cli').module, undefined)
 })
 
-test('resolveOptions treats default-sourced git/install as undefined', () => {
-  const options = resolveOptions({ git: true, install: true }, () => 'default')
+test('resolveOptions treats default-sourced git/install/docker as undefined', () => {
+  const options = resolveOptions({ git: true, install: true, docker: true }, () => 'default')
   assert.equal(options.git, undefined)
   assert.equal(options.install, undefined)
+  assert.equal(options.docker, undefined)
+})
+
+test('resolveOptions forwards an explicit docker flag', () => {
+  assert.equal(resolveOptions({ docker: true }, () => 'cli').docker, true)
 })
 
 test('resolveOptions forwards explicit flags and passthrough fields', () => {

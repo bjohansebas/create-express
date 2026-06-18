@@ -41,6 +41,7 @@ npm create express@latest my-app -- --ts --view ejs --linter biome --test vitest
 | `--view <engine>` | View engine: `none`, `ejs`, `pug`, `handlebars`. |
 | `--linter <name>` | Linter: `none`, `biome`, `oxlint`, `eslint`. |
 | `--test <runner>` | Test runner: `none`, `vitest`, `node`, `mocha`. |
+| `--docker` / `--no-docker` | Add (or not) a `Dockerfile` and `.dockerignore`. |
 | `--pm`, `--package-manager <name>` | Package manager: `npm`, `pnpm`, `yarn`, `bun` (defaults to the one that launched the CLI). |
 | `-g`, `--git` / `--no-git` | Initialize (or not) a git repository. |
 | `-i`, `--install` / `--no-install` | Install (or not) dependencies. |
