@@ -9,6 +9,10 @@ test('resolveOptions maps the language flags', () => {
   assert.equal(resolveOptions({}, () => 'cli').language, undefined)
 })
 
+test('resolveOptions forwards the package manager flag', () => {
+  assert.equal(resolveOptions({ packageManager: 'bun' }, () => 'cli').packageManager, 'bun')
+})
+
 test('resolveOptions maps the module flags', () => {
   assert.equal(resolveOptions({ esm: true }, () => 'cli').module, 'esm')
   assert.equal(resolveOptions({ cjs: true }, () => 'cli').module, 'cjs')

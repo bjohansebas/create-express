@@ -1,5 +1,3 @@
-import { getPackageManager } from '../utils/package-manager.js'
-
 export function getContext(projectName, options) {
   const context = {
     projectName,
@@ -13,7 +11,7 @@ export function getContext(projectName, options) {
     git: options.git,
     install: options.install,
     yes: options.yes ?? false,
-    packageManager: getPackageManager(),
+    packageManager: options.packageManager,
   }
 
   return context

@@ -38,6 +38,7 @@ test('getContext maps options and defaults yes to false', () => {
     test: 'vitest',
     git: true,
     install: false,
+    packageManager: 'pnpm',
   })
 
   assert.equal(context.projectName, 'my-app')
@@ -46,7 +47,7 @@ test('getContext maps options and defaults yes to false', () => {
   assert.equal(context.git, true)
   assert.equal(context.install, false)
   assert.equal(context.yes, false)
-  assert.equal(typeof context.packageManager, 'string')
+  assert.equal(context.packageManager, 'pnpm')
 })
 
 test('getContext keeps an explicit yes flag', () => {

@@ -97,8 +97,8 @@ test('project-name: prompts for a name (rejecting invalid input) when the basena
 })
 
 test('select-features: falls back to prompts when no flags are given', async () => {
-  // Prompt order: language, module, example, view, linter, test.
-  answers.select = ['js', 'esm', 'api', 'ejs', 'eslint', 'vitest']
+  // Prompt order: language, module, example, view, linter, test, package manager.
+  answers.select = ['js', 'esm', 'api', 'ejs', 'eslint', 'vitest', 'pnpm']
 
   const context = {
     language: undefined,
@@ -107,6 +107,7 @@ test('select-features: falls back to prompts when no flags are given', async () 
     view: undefined,
     linter: undefined,
     test: undefined,
+    packageManager: undefined,
     yes: false,
   }
   await selectFeaturesAction(context)
@@ -118,6 +119,7 @@ test('select-features: falls back to prompts when no flags are given', async () 
   assert.equal(context.view, 'ejs')
   assert.equal(context.linter, 'eslint')
   assert.equal(context.test, 'vitest')
+  assert.equal(context.packageManager, 'pnpm')
 })
 
 test('git: initializes the repository when confirmed', async () => {
