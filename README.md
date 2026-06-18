@@ -36,6 +36,7 @@ npm create express@latest my-app -- --ts --view ejs --linter biome --test vitest
 | `[directory]` | Directory to create the project in. |
 | `--ts`, `--typescript` | Use TypeScript. |
 | `--js`, `--javascript` | Use JavaScript. |
+| `--example <name>` | Starter example: `minimal`, `api`, `web`, `mvc`. |
 | `--view <engine>` | View engine: `none`, `ejs`, `pug`. |
 | `--linter <name>` | Linter: `none`, `biome`, `eslint`. |
 | `--test <runner>` | Test runner: `none`, `vitest`, `node`, `mocha`. |
@@ -52,6 +53,20 @@ runner, git and install enabled). This makes the command safe to run in CI:
 npm create express@latest my-app -- --yes --no-install --no-git
 ```
 
+## Starter examples
+
+Pick a starting point with `--example` (like Vite's templates). Each one is a
+working, realistic scaffold rather than a bare hello-world:
+
+- **`minimal`** — a single route returning `Hello, World!`.
+- **`api`** — a JSON REST API: a `routes/` router with a sample resource, a
+  request logger, body parsing, and a centralized 404 + error handler.
+- **`web`** — a server-rendered app with a view engine, static assets and error pages.
+- **`mvc`** — a layered structure (routes / controllers / services) ready to grow.
+
+Examples compose with everything else, so `--example api --ts --linter biome
+--test vitest` gives you a typed, linted, tested REST API.
+
 ## What you get
 
 The generated project is composed from small fragments, so you only get what you
@@ -61,7 +76,8 @@ pick:
 - `server.(js|ts)` — boots the app and listens on `process.env.PORT` (default `3000`).
 - A view engine (EJS or Pug) with a `views/` folder, when selected.
 - A linter (Biome or ESLint) preconfigured to match the generated code.
-- A test runner (Vitest, or the built-in `node:test`) with a sample test, when selected.
+- A test runner (Vitest, the built-in `node:test`, or Mocha) with a test that
+  exercises the chosen example's own routes, when selected.
 
 ## Contributing
 

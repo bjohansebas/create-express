@@ -109,6 +109,85 @@ test('composes a project with the Node.js test runner and no extra deps', async 
   }
 })
 
+test('api example: scaffolds routes/middleware and strips @types for JavaScript', async () => {
+  const { context, cwd, pkg } = compose({ example: 'api' })
+  try {
+    await composeAction(context)
+
+    assert.ok(existsSync(join(cwd, 'app.js')))
+    assert.ok(existsSync(join(cwd, 'routes/users.js')))
+    assert.ok(existsSync(join(cwd, 'middleware/error-handler.js')))
+
+    const manifest = pkg()
+    assert.ok('morgan' in manifest.dependencies)
+    // The only devDependency was @types/morgan, dropped for a JS project.
+    assert.ok(!manifest.devDependencies, 'JS project should not keep @types/* packages')
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
+test('api example: keeps @types packages for TypeScript', async () => {
+  const { context, cwd, pkg } = compose({ example: 'api', typescript: true })
+  try {
+    await composeAction(context)
+
+    assert.ok(existsSync(join(cwd, 'app.ts')))
+    assert.ok(existsSync(join(cwd, 'routes/users.ts')))
+
+    const manifest = pkg()
+    assert.ok('@types/morgan' in manifest.devDependencies)
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
+test('web example: composes the views hook, static assets and error page', async () => {
+  const { context, cwd } = compose({ example: 'web', view: 'ejs', typescript: true })
+  try {
+    await composeAction(context)
+
+    assert.ok(existsSync(join(cwd, 'app.ts')))
+    assert.ok(existsSync(join(cwd, 'routes/index.ts')))
+    assert.ok(existsSync(join(cwd, 'public/stylesheets/style.css')))
+    assert.ok(existsSync(join(cwd, 'views/index.ejs')))
+    assert.ok(existsSync(join(cwd, 'views/error.ejs')))
+
+    // The view fragment overrides the example's no-op setupViews hook.
+    assert.match(readFileSync(join(cwd, 'views.ts'), 'utf-8'), /view engine/)
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
+test('mvc example: composes the routes/controllers/services layers', async () => {
+  const { context, cwd } = compose({ example: 'mvc', typescript: true })
+  try {
+    await composeAction(context)
+
+    assert.ok(existsSync(join(cwd, 'routes/users.ts')))
+    assert.ok(existsSync(join(cwd, 'controllers/users.ts')))
+    assert.ok(existsSync(join(cwd, 'services/users.ts')))
+    assert.ok(existsSync(join(cwd, 'middleware/error-handler.ts')))
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
+test('selects the example-specific test and removes the staging dir', async () => {
+  const { context, cwd } = compose({ example: 'api', test: 'node' })
+  try {
+    await composeAction(context)
+
+    assert.ok(existsSync(join(cwd, 'app.test.js')))
+    assert.ok(!existsSync(join(cwd, 'tests')), 'the tests/ staging dir is removed')
+    // The api test exercises the example's own routes, not just GET /.
+    assert.match(readFileSync(join(cwd, 'app.test.js'), 'utf-8'), /\/api\/users/)
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
 test('composes a project with Mocha and its config file', async () => {
   const { context, cwd, pkg } = compose({ test: 'mocha' })
   try {

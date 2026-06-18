@@ -97,13 +97,22 @@ test('project-name: prompts for a name (rejecting invalid input) when the basena
 })
 
 test('select-features: falls back to prompts when no flags are given', async () => {
-  answers.select = ['js', 'ejs', 'eslint', 'vitest']
+  // Prompt order: language, example, view, linter, test.
+  answers.select = ['js', 'api', 'ejs', 'eslint', 'vitest']
 
-  const context = { language: undefined, view: undefined, linter: undefined, test: undefined, yes: false }
+  const context = {
+    language: undefined,
+    example: undefined,
+    view: undefined,
+    linter: undefined,
+    test: undefined,
+    yes: false,
+  }
   await selectFeaturesAction(context)
 
   assert.equal(context.language, 'js')
   assert.equal(context.typescript, false)
+  assert.equal(context.example, 'api')
   assert.equal(context.view, 'ejs')
   assert.equal(context.linter, 'eslint')
   assert.equal(context.test, 'vitest')

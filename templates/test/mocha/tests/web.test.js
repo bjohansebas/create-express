@@ -3,13 +3,13 @@ import { describe, it } from 'mocha'
 import { app } from './app.js'
 
 describe('app', () => {
-  it('responds with 200 on GET /', async () => {
+  it('responds on its routes', async () => {
     const server = app.listen(0)
-    const { port } = server.address()
+    const base = `http://localhost:${server.address().port}`
 
     try {
-      const response = await fetch(`http://localhost:${port}/`)
-      assert.equal(response.status, 200)
+      assert.equal((await fetch(`${base}/`)).status, 200)
+      assert.equal((await fetch(`${base}/nope`)).status, 404)
     } finally {
       server.close()
     }

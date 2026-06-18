@@ -142,6 +142,26 @@ test('projectNameAction with --yes throws on a non-empty directory', async () =>
   await assert.rejects(projectNameAction({ projectName: dir, yes: true }), /is not empty/)
 })
 
+test('selectFeaturesAction defaults the view engine for the web starter', async () => {
+  const context = { example: 'web', language: 'ts', view: undefined, linter: 'none', test: 'none', yes: true }
+  await selectFeaturesAction(context)
+
+  assert.equal(context.view, 'ejs')
+})
+
+test('selectFeaturesAction keeps an explicit view engine for the web starter', async () => {
+  const context = { example: 'web', language: 'ts', view: 'pug', linter: 'none', test: 'none', yes: true }
+  await selectFeaturesAction(context)
+
+  assert.equal(context.view, 'pug')
+})
+
+test('selectFeaturesAction rejects "none" as a view engine for the web starter', async () => {
+  const context = { example: 'web', language: 'ts', view: 'none', linter: 'none', test: 'none', yes: true }
+
+  await assert.rejects(selectFeaturesAction(context), /Invalid value "none" for --view/)
+})
+
 test('selectFeaturesAction keeps options provided as flags', async () => {
   const context = { language: 'js', view: 'pug', linter: undefined, test: undefined, yes: true }
   await selectFeaturesAction(context)

@@ -20,6 +20,7 @@ export function resolveOptions(options, getOptionSource) {
 
   return {
     language,
+    example: options.example,
     view: options.view,
     linter: options.linter,
     test: options.test,

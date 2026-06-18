@@ -3,13 +3,12 @@ import type { AddressInfo } from 'node:net'
 import { test } from 'node:test'
 import { app } from './app.ts'
 
-test('GET / responds with 200', async () => {
+test('responds on its routes', async () => {
   const server = app.listen(0)
-  const { port } = server.address() as AddressInfo
+  const base = `http://localhost:${(server.address() as AddressInfo).port}`
 
   try {
-    const response = await fetch(`http://localhost:${port}/`)
-    assert.equal(response.status, 200)
+    assert.equal((await fetch(`${base}/`)).status, 200)
   } finally {
     server.close()
   }

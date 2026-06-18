@@ -4,6 +4,7 @@ import {
   mkdirSync,
   readdirSync,
   readFileSync,
+  renameSync,
   rmSync,
   statSync,
   writeFileSync,
@@ -29,7 +30,7 @@ const IGNORED_ENTRIES = new Set(['node_modules'])
  * earlier ones.
  */
 function fragmentsFor(context) {
-  const fragments = ['base']
+  const fragments = ['base', `example/${context.example ?? 'minimal'}`]
 
   if (context.typescript) {
     fragments.push('typescript')
@@ -97,8 +98,24 @@ function consolidateLanguage(dir, typescript) {
   }
 }
 
+/**
+ * Test runner fragments ship one test per example under `tests/`. Promote the
+ * one matching the chosen example to `app.test.<ext>` and drop the rest.
+ */
+function selectExampleTest(cwd, context) {
+  const testsDir = join(cwd, 'tests')
+  if (!existsSync(testsDir)) {
+    return
+  }
+
+  // Every runner ships a test for every example, so this is always present.
+  const ext = context.typescript ? 'ts' : 'js'
+  renameSync(join(testsDir, `${context.example ?? 'minimal'}.test.${ext}`), join(cwd, `app.test.${ext}`))
+  rmSync(testsDir, { recursive: true, force: true })
+}
+
 function describe(context) {
-  const parts = [context.typescript ? 'TypeScript' : 'JavaScript']
+  const parts = [context.example ?? 'minimal', context.typescript ? 'TypeScript' : 'JavaScript']
   if (context.view && context.view !== 'none') parts.push(`${context.view} views`)
   if (context.linter && context.linter !== 'none') parts.push(context.linter)
   if (context.test && context.test !== 'none') parts.push(context.test)
@@ -119,6 +136,20 @@ export default async function composeAction(context) {
   }
 
   consolidateLanguage(context.cwd, context.typescript)
+  selectExampleTest(context.cwd, context)
+
+  // A JavaScript project has no use for `@types/*` packages that fragments may
+  // declare for their TypeScript variant.
+  if (!context.typescript && pkg.value.devDependencies) {
+    for (const dep of Object.keys(pkg.value.devDependencies)) {
+      if (dep.startsWith('@types/')) {
+        delete pkg.value.devDependencies[dep]
+      }
+    }
+    if (Object.keys(pkg.value.devDependencies).length === 0) {
+      delete pkg.value.devDependencies
+    }
+  }
 
   const manifest = sortDependencies(pkg.value)
   manifest.name = context.projectName

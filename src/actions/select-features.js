@@ -5,8 +5,21 @@ const LANGUAGES = [
   { value: 'js', name: 'JavaScript' },
 ]
 
+const EXAMPLES = [
+  { value: 'minimal', name: 'Minimal (Hello World)' },
+  { value: 'api', name: 'REST API (JSON)' },
+  { value: 'web', name: 'Web app (views + static)' },
+  { value: 'mvc', name: 'Structured / MVC' },
+]
+
 const VIEWS = [
   { value: 'none', name: 'None (JSON API)' },
+  { value: 'ejs', name: 'EJS' },
+  { value: 'pug', name: 'Pug' },
+]
+
+// The web starter renders server-side views, so "none" is not an option there.
+const WEB_VIEWS = [
   { value: 'ejs', name: 'EJS' },
   { value: 'pug', name: 'Pug' },
 ]
@@ -56,10 +69,17 @@ export default async function selectFeaturesAction(context) {
   })
   context.typescript = context.language === 'ts'
 
+  context.example = await resolveOption(context, 'example', {
+    choices: EXAMPLES,
+    message: 'Which starter example do you want?',
+    fallback: 'minimal',
+  })
+
+  const webView = context.example === 'web'
   context.view = await resolveOption(context, 'view', {
-    choices: VIEWS,
+    choices: webView ? WEB_VIEWS : VIEWS,
     message: 'Which view engine do you want?',
-    fallback: 'none',
+    fallback: webView ? 'ejs' : 'none',
   })
 
   context.linter = await resolveOption(context, 'linter', {

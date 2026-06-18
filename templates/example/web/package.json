@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "morgan": "1"
+  },
+  "devDependencies": {
+    "@types/morgan": "1"
+  }
+}
