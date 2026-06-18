@@ -18,8 +18,17 @@ export function resolveOptions(options, getOptionSource) {
     language = 'js'
   }
 
+  let moduleSystem
+  if (options.esm) {
+    moduleSystem = 'esm'
+  }
+  if (options.cjs) {
+    moduleSystem = 'cjs'
+  }
+
   return {
     language,
+    module: moduleSystem,
     example: options.example,
     view: options.view,
     linter: options.linter,

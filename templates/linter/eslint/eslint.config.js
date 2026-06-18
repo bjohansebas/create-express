@@ -16,6 +16,8 @@ export default tseslint.config(
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' },
       ],
+      // Allow CommonJS projects to use require().
+      '@typescript-eslint/no-require-imports': 'off',
     },
   },
 )

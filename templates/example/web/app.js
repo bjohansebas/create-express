@@ -1,4 +1,3 @@
-import { fileURLToPath } from 'node:url'
 import express from 'express'
 import logger from 'morgan'
 import { errorHandler } from './middleware/error-handler.js'
@@ -11,7 +10,7 @@ setupViews(app)
 
 app.use(logger('dev'))
 app.use(express.urlencoded({ extended: false }))
-app.use(express.static(fileURLToPath(new URL('./public', import.meta.url))))
+app.use(express.static('public'))
 
 app.use('/', router)
 

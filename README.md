@@ -36,6 +36,7 @@ npm create express@latest my-app -- --ts --view ejs --linter biome --test vitest
 | `[directory]` | Directory to create the project in. |
 | `--ts`, `--typescript` | Use TypeScript. |
 | `--js`, `--javascript` | Use JavaScript. |
+| `--esm` / `--cjs` | Module system: ES modules (default) or CommonJS. |
 | `--example <name>` | Starter example: `minimal`, `api`, `web`, `mvc`. |
 | `--view <engine>` | View engine: `none`, `ejs`, `pug`, `handlebars`. |
 | `--linter <name>` | Linter: `none`, `biome`, `eslint`. |

@@ -1,4 +1,3 @@
-import { fileURLToPath } from 'node:url'
 import type { NextFunction, Request, Response } from 'express'
 import express from 'express'
 import logger from 'morgan'
@@ -12,7 +11,7 @@ setupViews(app)
 
 app.use(logger('dev'))
 app.use(express.urlencoded({ extended: false }))
-app.use(express.static(fileURLToPath(new URL('./public', import.meta.url))))
+app.use(express.static('public'))
 
 app.use('/', router)
 

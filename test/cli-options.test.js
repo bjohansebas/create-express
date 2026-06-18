@@ -9,6 +9,12 @@ test('resolveOptions maps the language flags', () => {
   assert.equal(resolveOptions({}, () => 'cli').language, undefined)
 })
 
+test('resolveOptions maps the module flags', () => {
+  assert.equal(resolveOptions({ esm: true }, () => 'cli').module, 'esm')
+  assert.equal(resolveOptions({ cjs: true }, () => 'cli').module, 'cjs')
+  assert.equal(resolveOptions({}, () => 'cli').module, undefined)
+})
+
 test('resolveOptions treats default-sourced git/install as undefined', () => {
   const options = resolveOptions({ git: true, install: true }, () => 'default')
   assert.equal(options.git, undefined)

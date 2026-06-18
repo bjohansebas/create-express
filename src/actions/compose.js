@@ -12,6 +12,7 @@ import {
 import { extname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { deepMerge, sortDependencies } from '../utils/merge.js'
+import { toCommonJs } from '../utils/to-cjs.js'
 
 const TEMPLATES_DIR = fileURLToPath(new URL('../../templates', import.meta.url))
 
@@ -114,8 +115,65 @@ function selectExampleTest(cwd, context) {
   rmSync(testsDir, { recursive: true, force: true })
 }
 
+/**
+ * Rewrite every source file to CommonJS and adjust tsconfig.json. The
+ * package.json `type` field is dropped by the caller.
+ */
+function applyCommonJs(dir, context) {
+  for (const entry of readdirSync(dir)) {
+    const path = join(dir, entry)
+
+    if (statSync(path).isDirectory()) {
+      applyCommonJs(path, context)
+      continue
+    }
+
+    // Vitest runs its test files through Vite (ESM) and imports the CommonJS
+    // app via interop, so the test stays as-is.
+    if (context.test === 'vitest' && (entry === 'app.test.js' || entry === 'app.test.ts')) {
+      continue
+    }
+
+    const ext = extname(entry)
+    if (ext === '.js' || ext === '.ts') {
+      writeFileSync(path, toCommonJs(readFileSync(path, 'utf-8'), ext === '.ts'))
+    } else if (entry === 'tsconfig.json') {
+      // String edits (not JSON round-trip) to preserve the formatting linters expect.
+      const tsconfig = readFileSync(path, 'utf-8')
+        .replace('"module": "NodeNext"', '"module": "commonjs"')
+        .replace('"moduleResolution": "NodeNext"', '"moduleResolution": "node"')
+        .replace(/ *"allowImportingTsExtensions": true,\n/, '')
+        .replace(/ *"rewriteRelativeImportExtensions": true,\n/, '')
+      writeFileSync(path, tsconfig)
+    }
+  }
+}
+
+/**
+ * TypeScript test files can't be run by `node --test`/mocha directly (native
+ * type-stripping doesn't transpile `import` in CommonJS, and not at all for
+ * older runners), so route them through tsx — uniformly for ESM and CommonJS.
+ */
+function useTsxForTests(manifest, context) {
+  if (!context.typescript || !manifest.scripts) {
+    return
+  }
+
+  if (context.test === 'node') {
+    manifest.scripts.test = 'node --import tsx --test'
+    manifest.scripts['test:watch'] = 'node --import tsx --test --watch'
+  } else if (context.test === 'mocha') {
+    manifest.scripts.test = 'mocha --node-option import=tsx'
+    manifest.scripts['test:watch'] = 'mocha --node-option import=tsx --watch'
+  }
+}
+
 function describe(context) {
-  const parts = [context.example ?? 'minimal', context.typescript ? 'TypeScript' : 'JavaScript']
+  const parts = [
+    context.example ?? 'minimal',
+    context.typescript ? 'TypeScript' : 'JavaScript',
+    context.module === 'cjs' ? 'CommonJS' : 'ESM',
+  ]
   if (context.view && context.view !== 'none') parts.push(`${context.view} views`)
   if (context.linter && context.linter !== 'none') parts.push(context.linter)
   if (context.test && context.test !== 'none') parts.push(context.test)
@@ -138,6 +196,10 @@ export default async function composeAction(context) {
   consolidateLanguage(context.cwd, context.typescript)
   selectExampleTest(context.cwd, context)
 
+  if (context.module === 'cjs') {
+    applyCommonJs(context.cwd, context)
+  }
+
   // A JavaScript project has no use for `@types/*` packages that fragments may
   // declare for their TypeScript variant.
   if (!context.typescript && pkg.value.devDependencies) {
@@ -151,7 +213,12 @@ export default async function composeAction(context) {
     }
   }
 
+  useTsxForTests(pkg.value, context)
+
   const manifest = sortDependencies(pkg.value)
+  if (context.module === 'cjs') {
+    delete manifest.type
+  }
   manifest.name = context.projectName
   writeFileSync(join(context.cwd, 'package.json'), `${JSON.stringify(manifest, null, 2)}\n`)
 
