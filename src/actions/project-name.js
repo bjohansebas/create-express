@@ -21,6 +21,17 @@ export function toValidPackageName(name) {
     .replace(/[^a-z\d\-~]+/g, '-')
 }
 
+/**
+ * Build the message shown when an npm package name is invalid, preferring the
+ * specific reason reported by the validator.
+ *
+ * @param {{ errors?: string[], warnings?: string[] }} result
+ * @returns {string}
+ */
+export function describeNameError(result) {
+  return [...(result.errors ?? []), ...(result.warnings ?? [])][0] ?? 'Invalid npm package name'
+}
+
 async function promptDirectory() {
   return input({
     message: 'Where should we create your project?',
@@ -57,10 +68,7 @@ export default async function projectNameAction(context) {
         default: toValidPackageName(packageName),
         validate: (name) => {
           const result = validate(name)
-          if (result.validForNewPackages) {
-            return true
-          }
-          return [...(result.errors ?? []), ...(result.warnings ?? [])][0] ?? 'Invalid npm package name'
+          return result.validForNewPackages || describeNameError(result)
         },
       })
     }
