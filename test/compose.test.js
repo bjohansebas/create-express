@@ -18,6 +18,7 @@ function compose(overrides) {
     view: 'none',
     linter: 'none',
     test: 'none',
+    packageManager: 'npm',
     ...overrides,
   }
   return { context, cwd, pkg: () => JSON.parse(readFileSync(join(cwd, 'package.json'), 'utf-8')) }
@@ -276,6 +277,27 @@ test('eslint: picks the language-specific config and TS-only deps', async () => 
     assert.ok(!('typescript-eslint' in (js.pkg().devDependencies ?? {})))
   } finally {
     rmSync(js.cwd, { recursive: true, force: true })
+  }
+})
+
+test('generates a README with the package manager and scripts', async () => {
+  const { context, cwd } = compose({
+    typescript: true,
+    linter: 'biome',
+    test: 'vitest',
+    packageManager: 'pnpm',
+  })
+  try {
+    await composeAction(context)
+
+    const doc = readFileSync(join(cwd, 'README.md'), 'utf-8')
+    assert.match(doc, /^# demo/m)
+    assert.match(doc, /pnpm install/)
+    assert.match(doc, /pnpm dev/) // non-npm needs no "run" prefix
+    assert.match(doc, /pnpm build/) // build script listed
+    assert.match(doc, /pnpm lint/)
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
   }
 })
 

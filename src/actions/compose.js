@@ -206,6 +206,43 @@ function useNativeTsWatch(manifest, context) {
   }
 }
 
+/**
+ * Build a README describing how to run the generated project, using the chosen
+ * package manager and whatever scripts the project ended up with.
+ */
+function readme(context, manifest) {
+  const pm = context.packageManager
+  const run = pm === 'npm' ? 'npm run' : pm
+
+  const lines = [
+    `# ${context.projectName}`,
+    '',
+    'An [Express](https://expressjs.com) app.',
+    '',
+    '## Getting started',
+    '',
+    'Install dependencies and start the development server:',
+    '',
+    '```sh',
+    `${pm} install`,
+    `${run} dev`,
+    '```',
+    '',
+    'The server listens on http://localhost:3000 — set the `PORT` environment variable to change it.',
+    '',
+    '## Scripts',
+    '',
+    '| Command | Runs |',
+    '| --- | --- |',
+  ]
+
+  for (const [name, command] of Object.entries(manifest.scripts)) {
+    lines.push(`| \`${run} ${name}\` | \`${command}\` |`)
+  }
+
+  return `${lines.join('\n')}\n`
+}
+
 function describe(context) {
   const parts = [
     context.example ?? 'minimal',
@@ -262,6 +299,7 @@ export default async function composeAction(context) {
   }
   manifest.name = context.projectName
   writeFileSync(join(context.cwd, 'package.json'), `${JSON.stringify(manifest, null, 2)}\n`)
+  writeFileSync(join(context.cwd, 'README.md'), readme(context, manifest))
 
   console.log('Success!', `Project created (${describe(context)})`)
 }
