@@ -163,6 +163,13 @@ test('selectFeaturesAction rejects "none" as a view engine for the web starter',
   await assert.rejects(selectFeaturesAction(context), /Invalid value "none" for --view/)
 })
 
+test('selectFeaturesAction defaults the view engine for the mvc starter', async () => {
+  const context = { example: 'mvc', language: 'ts', view: undefined, linter: 'none', test: 'none', yes: true }
+  await selectFeaturesAction(context)
+
+  assert.equal(context.view, 'ejs')
+})
+
 test('selectFeaturesAction keeps options provided as flags', async () => {
   const context = { language: 'js', view: 'pug', linter: undefined, test: undefined, yes: true }
   await selectFeaturesAction(context)

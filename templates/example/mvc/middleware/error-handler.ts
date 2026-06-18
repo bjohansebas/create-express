@@ -11,7 +11,8 @@ export function errorHandler(
   _next: NextFunction,
 ): void {
   const status = err.status ?? 500
-  res.status(status).json({
-    error: err.message || 'Internal Server Error',
+  res.status(status).render('error', {
+    status,
+    message: err.message || 'Internal Server Error',
   })
 }

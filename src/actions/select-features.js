@@ -92,11 +92,12 @@ export default async function selectFeaturesAction(context) {
     fallback: 'minimal',
   })
 
-  const webView = context.example === 'web'
+  // The web and mvc starters render server-side views, so they need an engine.
+  const rendersViews = context.example === 'web' || context.example === 'mvc'
   context.view = await resolveOption(context, 'view', {
-    choices: webView ? WEB_VIEWS : VIEWS,
+    choices: rendersViews ? WEB_VIEWS : VIEWS,
     message: 'Which view engine do you want?',
-    fallback: webView ? 'ejs' : 'none',
+    fallback: rendersViews ? 'ejs' : 'none',
   })
 
   context.linter = await resolveOption(context, 'linter', {

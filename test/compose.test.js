@@ -169,8 +169,8 @@ test('web example: composes the views hook, static assets and error page', async
   }
 })
 
-test('mvc example: composes the routes/controllers/services layers', async () => {
-  const { context, cwd } = compose({ example: 'mvc', typescript: true })
+test('mvc example: composes layers and keeps only the chosen view engine', async () => {
+  const { context, cwd } = compose({ example: 'mvc', view: 'ejs', typescript: true })
   try {
     await composeAction(context)
 
@@ -178,6 +178,12 @@ test('mvc example: composes the routes/controllers/services layers', async () =>
     assert.ok(existsSync(join(cwd, 'controllers/users.ts')))
     assert.ok(existsSync(join(cwd, 'services/users.ts')))
     assert.ok(existsSync(join(cwd, 'middleware/error-handler.ts')))
+
+    // The mvc users view ships in every engine; only the chosen one survives.
+    assert.ok(existsSync(join(cwd, 'views/users.ejs')))
+    assert.ok(!existsSync(join(cwd, 'views/users.pug')))
+    assert.ok(!existsSync(join(cwd, 'views/users.hbs')))
+    assert.ok(existsSync(join(cwd, 'views/index.ejs'))) // from the view fragment
   } finally {
     rmSync(cwd, { recursive: true, force: true })
   }

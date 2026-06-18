@@ -100,6 +100,26 @@ function consolidateLanguage(dir, typescript) {
   }
 }
 
+const VIEW_EXTENSIONS = { ejs: '.ejs', pug: '.pug', handlebars: '.hbs' }
+
+/**
+ * An example may ship a view template in every engine's syntax (e.g. mvc's
+ * `users` view); keep only the one matching the chosen engine.
+ */
+function pruneViewTemplates(cwd, context) {
+  const keep = VIEW_EXTENSIONS[context.view]
+  if (!keep) {
+    return
+  }
+
+  const viewsDir = join(cwd, 'views')
+  for (const entry of readdirSync(viewsDir)) {
+    if (extname(entry) !== keep) {
+      rmSync(join(viewsDir, entry))
+    }
+  }
+}
+
 /**
  * The ESLint fragment ships a JavaScript and a TypeScript config; keep the one
  * matching the project language as `eslint.config.js`.
@@ -271,6 +291,7 @@ export default async function composeAction(context) {
   consolidateLanguage(context.cwd, context.typescript)
   selectExampleTest(context.cwd, context)
   selectEslintConfig(context.cwd, context)
+  pruneViewTemplates(context.cwd, context)
 
   if (context.module === 'cjs') {
     applyCommonJs(context.cwd, context)

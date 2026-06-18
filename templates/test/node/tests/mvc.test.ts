@@ -9,8 +9,7 @@ test('responds on its routes', async () => {
 
   try {
     assert.equal((await fetch(`${base}/`)).status, 200)
-    assert.equal((await fetch(`${base}/api/users`)).status, 200)
-    assert.equal((await fetch(`${base}/api/users/1`)).status, 200)
+    assert.equal((await fetch(`${base}/users`)).status, 200)
     assert.equal((await fetch(`${base}/nope`)).status, 404)
   } finally {
     server.close()
