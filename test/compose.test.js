@@ -1,9 +1,12 @@
 import assert from 'node:assert/strict'
-import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs'
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { test } from 'node:test'
+import { fileURLToPath } from 'node:url'
 import composeAction from '../src/actions/compose.js'
+
+const BASE_FRAGMENT = fileURLToPath(new URL('../templates/base', import.meta.url))
 
 function compose(overrides) {
   const cwd = mkdtempSync(join(tmpdir(), 'create-express-compose-'))
@@ -70,6 +73,22 @@ test('composes a full TypeScript project (ejs + biome + vitest)', async () => {
     assert.equal(manifest.scripts.dev, 'tsx watch server.ts')
     assert.equal(manifest.scripts.build, 'tsc')
   } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
+test('ignores node_modules present in a fragment', async () => {
+  const planted = join(BASE_FRAGMENT, 'node_modules')
+  mkdirSync(planted, { recursive: true })
+  writeFileSync(join(planted, 'marker.js'), '')
+
+  const { context, cwd } = compose({})
+  try {
+    await composeAction(context)
+    assert.ok(existsSync(join(cwd, 'app.js')))
+    assert.ok(!existsSync(join(cwd, 'node_modules')), 'node_modules must not be copied')
+  } finally {
+    rmSync(planted, { recursive: true, force: true })
     rmSync(cwd, { recursive: true, force: true })
   }
 })

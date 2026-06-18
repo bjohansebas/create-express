@@ -13,7 +13,18 @@ let spawnStatus = 0
 
 mock.module('@inquirer/prompts', {
   namedExports: {
-    input: async () => answers.input.shift(),
+    // Mimic inquirer: when a `validate` is provided, run it and re-prompt
+    // (consume the next queued answer) until it passes.
+    input: async (options = {}) => {
+      while (answers.input.length > 0) {
+        const value = answers.input.shift()
+        if (typeof options.validate === 'function' && options.validate(value) !== true) {
+          continue
+        }
+        return value
+      }
+      return undefined
+    },
     select: async () => answers.select.shift(),
     confirm: async () => answers.confirm.shift(),
   },
@@ -74,9 +85,10 @@ test('project-name: re-prompts when the directory is not empty', async () => {
   assert.equal(context.projectName, 'ok-app')
 })
 
-test('project-name: prompts for a name when the basename is invalid', async () => {
+test('project-name: prompts for a name (rejecting invalid input) when the basename is invalid', async () => {
   const target = join(tmp(), 'Bad_Name')
-  answers.input = ['fixed-name']
+  // First answer is still invalid (rejected by `validate`), second one is accepted.
+  answers.input = ['Also Invalid!', 'fixed-name']
 
   const context = { projectName: target, yes: false }
   await projectNameAction(context)
@@ -146,4 +158,21 @@ test('install: skips installation when declined', async () => {
 
   assert.equal(context.install, false)
   assert.equal(spawnCalls.length, 0)
+})
+
+test('git: initializes without prompting under --yes', async () => {
+  const context = { cwd: tmp(), git: undefined, yes: true }
+  await gitAction(context)
+
+  assert.equal(context.git, true)
+  assert.equal(answers.confirm.length, 0)
+  assert.ok(spawnCalls.some(([command]) => command === 'git'))
+})
+
+test('install: installs without prompting under --yes', async () => {
+  const context = { cwd: tmp(), install: undefined, yes: true, packageManager: 'npm' }
+  await installAction(context)
+
+  assert.equal(context.install, true)
+  assert.deepEqual(spawnCalls[0], ['npm', 'install'])
 })
