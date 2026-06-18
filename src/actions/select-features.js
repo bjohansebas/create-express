@@ -20,6 +20,7 @@ const LINTERS = [
 const TESTS = [
   { value: 'none', name: 'None' },
   { value: 'vitest', name: 'Vitest' },
+  { value: 'node', name: 'Node.js (node:test)' },
 ]
 
 function assertChoice(key, value, choices) {

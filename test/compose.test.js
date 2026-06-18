@@ -93,6 +93,22 @@ test('ignores node_modules present in a fragment', async () => {
   }
 })
 
+test('composes a project with the Node.js test runner and no extra deps', async () => {
+  const { context, cwd, pkg } = compose({ typescript: true, test: 'node' })
+  try {
+    await composeAction(context)
+
+    assert.ok(existsSync(join(cwd, 'app.test.ts')))
+    assert.ok(!existsSync(join(cwd, 'app.test.js')))
+
+    const manifest = pkg()
+    assert.equal(manifest.scripts.test, 'node --test')
+    assert.ok(!('vitest' in (manifest.devDependencies ?? {})), 'node:test must not pull in vitest')
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
 test('composes a JavaScript project with pug + eslint', async () => {
   const { context, cwd, pkg } = compose({ view: 'pug', linter: 'eslint' })
   try {
