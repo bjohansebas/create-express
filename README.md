@@ -37,7 +37,7 @@ npm create express@latest my-app -- --ts --view ejs --linter biome --test vitest
 | `--ts`, `--typescript` | Use TypeScript. |
 | `--js`, `--javascript` | Use JavaScript. |
 | `--example <name>` | Starter example: `minimal`, `api`, `web`, `mvc`. |
-| `--view <engine>` | View engine: `none`, `ejs`, `pug`. |
+| `--view <engine>` | View engine: `none`, `ejs`, `pug`, `handlebars`. |
 | `--linter <name>` | Linter: `none`, `biome`, `eslint`. |
 | `--test <runner>` | Test runner: `none`, `vitest`, `node`, `mocha`. |
 | `-g`, `--git` / `--no-git` | Initialize (or not) a git repository. |

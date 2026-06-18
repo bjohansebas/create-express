@@ -12,17 +12,13 @@ const EXAMPLES = [
   { value: 'mvc', name: 'Structured / MVC' },
 ]
 
-const VIEWS = [
-  { value: 'none', name: 'None (JSON API)' },
-  { value: 'ejs', name: 'EJS' },
-  { value: 'pug', name: 'Pug' },
-]
-
-// The web starter renders server-side views, so "none" is not an option there.
 const WEB_VIEWS = [
   { value: 'ejs', name: 'EJS' },
   { value: 'pug', name: 'Pug' },
+  { value: 'handlebars', name: 'Handlebars' },
 ]
+
+const VIEWS = [{ value: 'none', name: 'None (JSON API)' }, ...WEB_VIEWS]
 
 const LINTERS = [
   { value: 'biome', name: 'Biome' },

@@ -188,6 +188,19 @@ test('selects the example-specific test and removes the staging dir', async () =
   }
 })
 
+test('handlebars view: uses the native hbs engine', async () => {
+  const { context, cwd, pkg } = compose({ example: 'web', view: 'handlebars', typescript: true })
+  try {
+    await composeAction(context)
+
+    assert.ok(existsSync(join(cwd, 'views/index.hbs')))
+    assert.match(readFileSync(join(cwd, 'views.ts'), 'utf-8'), /'hbs'/)
+    assert.ok('hbs' in pkg().dependencies)
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
 test('composes a project with Mocha and its config file', async () => {
   const { context, cwd, pkg } = compose({ test: 'mocha' })
   try {
