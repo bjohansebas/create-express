@@ -13,7 +13,8 @@ import { fileURLToPath } from 'node:url'
 const BIN = fileURLToPath(new URL('../../bin/index.js', import.meta.url))
 
 function run(command, args, cwd) {
-  return spawnSync(command, args, { cwd, encoding: 'utf-8' })
+  // On Windows, npm is a `.cmd` shim that needs a shell to resolve.
+  return spawnSync(command, args, { cwd, encoding: 'utf-8', shell: process.platform === 'win32' })
 }
 
 // A spread of combinations covering both module systems, both languages, every

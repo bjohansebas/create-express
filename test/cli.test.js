@@ -9,7 +9,7 @@ import { fileURLToPath } from 'node:url'
 const BIN = fileURLToPath(new URL('../bin/index.js', import.meta.url))
 
 function run(args) {
-  return spawnSync('node', [BIN, ...args], { encoding: 'utf-8' })
+  return spawnSync('node', [BIN, ...args], { encoding: 'utf-8', timeout: 60_000 })
 }
 
 test('scaffolds end-to-end with --yes (non-interactive)', () => {
