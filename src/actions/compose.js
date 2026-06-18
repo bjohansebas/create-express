@@ -176,6 +176,7 @@ function applyCommonJs(dir, context) {
     } else if (entry === 'tsconfig.json') {
       // String edits (not JSON round-trip) to preserve the formatting linters expect.
       const tsconfig = readFileSync(path, 'utf-8')
+        .replace(/\r\n/g, '\n')
         .replace('"module": "NodeNext"', '"module": "commonjs"')
         .replace('"moduleResolution": "NodeNext"', '"moduleResolution": "node"')
         .replace(/ *"allowImportingTsExtensions": true,\n/, '')

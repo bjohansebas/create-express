@@ -28,7 +28,8 @@ function normalize(content) {
  * @returns {string}
  */
 export function toCommonJs(content, isTypeScript) {
-  const withDirname = replaceDirnameUsage(content)
+  // Normalize CRLF (e.g. from a Windows checkout) so the line-based regexes match.
+  const withDirname = replaceDirnameUsage(content.replace(/\r\n/g, '\n'))
 
   if (isTypeScript) {
     return normalize(

@@ -43,6 +43,14 @@ test('toCommonJs replaces the import.meta.url idiom with __dirname', () => {
   assert.match(cjs, /__dirname \+ '\/views'/)
 })
 
+test('toCommonJs normalizes CRLF line endings (Windows checkouts)', () => {
+  const cjs = toCommonJs("import x from 'y'\r\nexport const z = x\r\n", false)
+
+  assert.doesNotMatch(cjs, /\r/)
+  assert.match(cjs, /const x = require\('y'\)/)
+  assert.match(cjs, /module\.exports = \{ z \}/)
+})
+
 test('toCommonJs keeps TS syntax but strips relative extensions', () => {
   const esm = "import type { Request } from 'express'\nimport { app } from './app.ts'\nexport const value = 1\n"
   const ts = toCommonJs(esm, true)
