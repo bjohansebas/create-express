@@ -301,6 +301,21 @@ test('generates a README with the package manager and scripts', async () => {
   }
 })
 
+test('pins the running Node version in .nvmrc and devEngines', async () => {
+  const { context, cwd, pkg } = compose({})
+  try {
+    await composeAction(context)
+
+    assert.equal(readFileSync(join(cwd, '.nvmrc'), 'utf-8').trim(), process.versions.node)
+
+    const { runtime } = pkg().devEngines
+    assert.equal(runtime.name, 'node')
+    assert.equal(runtime.version, `>=${process.versions.node}`)
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
 test('composes a project with Mocha and its config file', async () => {
   const { context, cwd, pkg } = compose({ test: 'mocha' })
   try {

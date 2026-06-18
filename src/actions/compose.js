@@ -298,7 +298,14 @@ export default async function composeAction(context) {
     delete manifest.type
   }
   manifest.name = context.projectName
+
+  // Pin the project to the Node version used to scaffold it.
+  manifest.devEngines = {
+    runtime: { name: 'node', version: `>=${process.versions.node}`, onFail: 'warn' },
+  }
+
   writeFileSync(join(context.cwd, 'package.json'), `${JSON.stringify(manifest, null, 2)}\n`)
+  writeFileSync(join(context.cwd, '.nvmrc'), `${process.versions.node}\n`)
   writeFileSync(join(context.cwd, 'README.md'), readme(context, manifest))
 
   console.log('Success!', `Project created (${describe(context)})`)
