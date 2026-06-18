@@ -12,6 +12,7 @@ import {
 import { extname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { deepMerge, sortDependencies } from '../utils/merge.js'
+import { supportsNativeTypeStripping } from '../utils/node.js'
 import { toCommonJs } from '../utils/to-cjs.js'
 
 const TEMPLATES_DIR = fileURLToPath(new URL('../../templates', import.meta.url))
@@ -183,6 +184,28 @@ function useTsxForTests(manifest, context) {
   }
 }
 
+/**
+ * Use Node's native `--watch` for the TypeScript dev script when the running
+ * Node can strip types (>=22.18) — but only for ESM, since a CommonJS `.ts`
+ * keeps `import`, which native stripping won't transpile. Drop `tsx` when
+ * neither the dev script nor the test runner needs it.
+ */
+function useNativeTsWatch(manifest, context) {
+  if (!context.typescript || !manifest.scripts) {
+    return
+  }
+
+  const native = context.module !== 'cjs' && supportsNativeTypeStripping(process.versions.node)
+  if (native) {
+    manifest.scripts.dev = 'node --watch server.ts'
+  }
+
+  const tsxNeeded = !native || context.test === 'node' || context.test === 'mocha'
+  if (!tsxNeeded && manifest.devDependencies) {
+    delete manifest.devDependencies.tsx
+  }
+}
+
 function describe(context) {
   const parts = [
     context.example ?? 'minimal',
@@ -231,6 +254,7 @@ export default async function composeAction(context) {
   }
 
   useTsxForTests(pkg.value, context)
+  useNativeTsWatch(pkg.value, context)
 
   const manifest = sortDependencies(pkg.value)
   if (context.module === 'cjs') {

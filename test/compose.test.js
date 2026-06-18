@@ -5,6 +5,7 @@ import { join } from 'node:path'
 import { test } from 'node:test'
 import { fileURLToPath } from 'node:url'
 import composeAction from '../src/actions/compose.js'
+import { supportsNativeTypeStripping } from '../src/utils/node.js'
 
 const BASE_FRAGMENT = fileURLToPath(new URL('../templates/base', import.meta.url))
 
@@ -70,7 +71,14 @@ test('composes a full TypeScript project (ejs + biome + vitest)', async () => {
     assert.ok('@biomejs/biome' in manifest.devDependencies)
     assert.ok('typescript' in manifest.devDependencies)
     assert.ok('vitest' in manifest.devDependencies)
-    assert.equal(manifest.scripts.dev, 'tsx watch server.ts')
+    // ESM + a native-capable Node uses `node --watch`; tsx is then unused (vitest).
+    if (supportsNativeTypeStripping(process.versions.node)) {
+      assert.equal(manifest.scripts.dev, 'node --watch server.ts')
+      assert.ok(!('tsx' in manifest.devDependencies), 'tsx should be dropped when unused')
+    } else {
+      assert.equal(manifest.scripts.dev, 'tsx watch server.ts')
+      assert.ok('tsx' in manifest.devDependencies)
+    }
     assert.equal(manifest.scripts.build, 'tsc')
   } finally {
     rmSync(cwd, { recursive: true, force: true })
