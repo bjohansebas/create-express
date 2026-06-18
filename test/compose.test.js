@@ -249,6 +249,28 @@ test('TypeScript + Mocha runs through tsx', async () => {
   }
 })
 
+test('eslint: picks the language-specific config and TS-only deps', async () => {
+  const ts = compose({ typescript: true, linter: 'eslint' })
+  try {
+    await composeAction(ts.context)
+    assert.ok(existsSync(join(ts.cwd, 'eslint.config.js')))
+    assert.ok(!existsSync(join(ts.cwd, 'typescript.js')) && !existsSync(join(ts.cwd, 'javascript.js')))
+    assert.match(readFileSync(join(ts.cwd, 'eslint.config.js'), 'utf-8'), /typescript-eslint/)
+    assert.ok('typescript-eslint' in ts.pkg().devDependencies)
+  } finally {
+    rmSync(ts.cwd, { recursive: true, force: true })
+  }
+
+  const js = compose({ linter: 'eslint' })
+  try {
+    await composeAction(js.context)
+    assert.doesNotMatch(readFileSync(join(js.cwd, 'eslint.config.js'), 'utf-8'), /typescript-eslint/)
+    assert.ok(!('typescript-eslint' in (js.pkg().devDependencies ?? {})))
+  } finally {
+    rmSync(js.cwd, { recursive: true, force: true })
+  }
+})
+
 test('composes a project with Mocha and its config file', async () => {
   const { context, cwd, pkg } = compose({ test: 'mocha' })
   try {

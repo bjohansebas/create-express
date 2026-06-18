@@ -4,20 +4,16 @@ import tseslint from 'typescript-eslint'
 
 export default tseslint.config(
   { ignores: ['dist'] },
-  { files: ['**/*.{js,ts}'] },
+  { languageOptions: { globals: { ...globals.node } } },
   js.configs.recommended,
-  ...tseslint.configs.recommended,
   {
-    languageOptions: {
-      globals: { ...globals.node },
-    },
+    files: ['**/*.ts'],
+    extends: tseslint.configs.recommended,
     rules: {
       '@typescript-eslint/no-unused-vars': [
         'error',
         { argsIgnorePattern: '^_', varsIgnorePattern: '^_', caughtErrorsIgnorePattern: '^_' },
       ],
-      // Allow CommonJS projects to use require().
-      '@typescript-eslint/no-require-imports': 'off',
     },
   },
 )

@@ -100,6 +100,21 @@ function consolidateLanguage(dir, typescript) {
 }
 
 /**
+ * The ESLint fragment ships a JavaScript and a TypeScript config; keep the one
+ * matching the project language as `eslint.config.js`.
+ */
+function selectEslintConfig(cwd, context) {
+  if (context.linter !== 'eslint') {
+    return
+  }
+
+  const keep = context.typescript ? 'typescript' : 'javascript'
+  const drop = context.typescript ? 'javascript' : 'typescript'
+  rmSync(join(cwd, `${drop}.js`), { force: true })
+  renameSync(join(cwd, `${keep}.js`), join(cwd, 'eslint.config.js'))
+}
+
+/**
  * Test runner fragments ship one test per example under `tests/`. Promote the
  * one matching the chosen example to `app.test.<ext>` and drop the rest.
  */
@@ -195,6 +210,7 @@ export default async function composeAction(context) {
 
   consolidateLanguage(context.cwd, context.typescript)
   selectExampleTest(context.cwd, context)
+  selectEslintConfig(context.cwd, context)
 
   if (context.module === 'cjs') {
     applyCommonJs(context.cwd, context)
@@ -204,7 +220,8 @@ export default async function composeAction(context) {
   // declare for their TypeScript variant.
   if (!context.typescript && pkg.value.devDependencies) {
     for (const dep of Object.keys(pkg.value.devDependencies)) {
-      if (dep.startsWith('@types/')) {
+      // `@types/*` and typescript-eslint are TypeScript-only tooling.
+      if (dep.startsWith('@types/') || dep === 'typescript-eslint') {
         delete pkg.value.devDependencies[dep]
       }
     }
