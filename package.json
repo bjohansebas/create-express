@@ -1,9 +1,8 @@
 {
-  "name": "@expressjs/create",
-  "version": "0.0.1",
-  "private": true,
+  "name": "@bjohansebas/create",
+  "version": "1.0.0",
   "license": "MIT",
-  "description": "Create Express apps with no build configuration",
+  "description": "The fastest way to create an Express application",
   "author": {
     "email": "bjohansebas@gmail.com",
     "name": "Sebastian Beltran"
