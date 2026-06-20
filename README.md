@@ -3,20 +3,20 @@
 Create [Express](https://expressjs.com) apps with no build configuration.
 
 ```sh
-npm create express@latest
+npm create @bjohansebas
 ```
 
 You can also run it with your package manager of choice:
 
 ```sh
 # pnpm
-pnpm create express
+pnpm create @bjohansebas
 
 # yarn
-yarn create express
+yarn create @bjohansebas
 
 # bun
-bun create express
+bun create @bjohansebas
 ```
 
 ## Usage
@@ -26,28 +26,28 @@ the project location and features. You can also pass a target directory and skip
 any prompt with flags:
 
 ```sh
-npm create express@latest my-app -- --ts --view ejs --linter biome --test vitest
+npm create @bjohansebas@latest my-app -- --ts --view ejs --linter biome --test vitest
 ```
 
 ### Options
 
-| Flag | Description |
-| --- | --- |
-| `[directory]` | Directory to create the project in. |
-| `--ts`, `--typescript` | Use TypeScript. |
-| `--js`, `--javascript` | Use JavaScript. |
-| `--esm` / `--cjs` | Module system: ES modules (default) or CommonJS. |
-| `--example <name>` | Starter example: `minimal`, `api`, `web`, `mvc`. |
-| `--view <engine>` | View engine: `none`, `ejs`, `pug`, `handlebars`. |
-| `--linter <name>` | Linter: `none`, `biome`, `oxlint`, `eslint`. |
-| `--test <runner>` | Test runner: `none`, `vitest`, `node`, `mocha`. |
-| `--docker` / `--no-docker` | Add (or not) a `Dockerfile` and `.dockerignore`. |
+| Flag                               | Description                                                                                |
+| ---------------------------------- | ------------------------------------------------------------------------------------------ |
+| `[directory]`                      | Directory to create the project in.                                                        |
+| `--ts`, `--typescript`             | Use TypeScript.                                                                            |
+| `--js`, `--javascript`             | Use JavaScript.                                                                            |
+| `--esm` / `--cjs`                  | Module system: ES modules (default) or CommonJS.                                           |
+| `--example <name>`                 | Starter example: `minimal`, `api`, `web`, `mvc`.                                           |
+| `--view <engine>`                  | View engine: `none`, `ejs`, `pug`, `handlebars`.                                           |
+| `--linter <name>`                  | Linter: `none`, `biome`, `oxlint`, `eslint`.                                               |
+| `--test <runner>`                  | Test runner: `none`, `vitest`, `node`, `mocha`.                                            |
+| `--docker` / `--no-docker`         | Add (or not) a `Dockerfile` and `.dockerignore`.                                           |
 | `--pm`, `--package-manager <name>` | Package manager: `npm`, `pnpm`, `yarn`, `bun` (defaults to the one that launched the CLI). |
-| `-g`, `--git` / `--no-git` | Initialize (or not) a git repository. |
-| `-i`, `--install` / `--no-install` | Install (or not) dependencies. |
-| `-f`, `--force` | Overwrite the target directory if it is not empty (keeps `.git`). |
-| `-y`, `--yes` | Skip prompts and use defaults for any option not provided. |
-| `-h`, `--help` | Display the help message. |
+| `-g`, `--git` / `--no-git`         | Initialize (or not) a git repository.                                                      |
+| `-i`, `--install` / `--no-install` | Install (or not) dependencies.                                                             |
+| `-f`, `--force`                    | Overwrite the target directory if it is not empty (keeps `.git`).                          |
+| `-y`, `--yes`                      | Skip prompts and use defaults for any option not provided.                                 |
+| `-h`, `--help`                     | Display the help message.                                                                  |
 
 Any option not provided as a flag is asked interactively, unless `--yes` is used,
 in which case the defaults are applied (TypeScript, Biome, no view engine, no test
