@@ -13,11 +13,6 @@ const LANGUAGES = [
   { value: 'js', name: 'JavaScript' },
 ]
 
-const MODULES = [
-  { value: 'esm', name: 'ES modules (import / export)' },
-  { value: 'cjs', name: 'CommonJS (require / module.exports)' },
-]
-
 const EXAMPLES = [
   { value: 'minimal', name: 'Minimal (Hello World)' },
   { value: 'api', name: 'REST API (JSON)' },
@@ -84,12 +79,6 @@ export default async function selectFeaturesAction(context) {
     fallback: 'ts',
   })
   context.typescript = context.language === 'ts'
-
-  context.module = await resolveOption(context, 'module', {
-    choices: MODULES,
-    message: 'Which module system do you want?',
-    fallback: 'esm',
-  })
 
   context.example = await resolveOption(context, 'example', {
     choices: EXAMPLES,

@@ -17,27 +17,27 @@ function run(command, args, cwd) {
   return spawnSync(command, args, { cwd, encoding: 'utf-8', shell: process.platform === 'win32' })
 }
 
-// A spread of combinations covering both module systems, both languages, every
-// example, every linter and every test runner.
+// A spread of combinations covering both languages, every example, every
+// linter and every test runner.
 const COMBOS = [
   {
-    name: 'ESM TS api + biome + vitest',
-    flags: ['--ts', '--esm', '--example', 'api', '--view', 'none', '--linter', 'biome', '--test', 'vitest'],
+    name: 'TS api + biome + vitest',
+    flags: ['--ts', '--example', 'api', '--view', 'none', '--linter', 'biome', '--test', 'vitest'],
     build: true,
   },
   {
-    name: 'ESM JS web + handlebars + eslint + node',
-    flags: ['--js', '--esm', '--example', 'web', '--view', 'handlebars', '--linter', 'eslint', '--test', 'node'],
+    name: 'JS web + handlebars + eslint + node',
+    flags: ['--js', '--example', 'web', '--view', 'handlebars', '--linter', 'eslint', '--test', 'node'],
     build: false,
   },
   {
-    name: 'CJS JS mvc + pug + oxlint + mocha',
-    flags: ['--js', '--cjs', '--example', 'mvc', '--view', 'pug', '--linter', 'oxlint', '--test', 'mocha'],
+    name: 'JS mvc + pug + oxlint + mocha',
+    flags: ['--js', '--example', 'mvc', '--view', 'pug', '--linter', 'oxlint', '--test', 'mocha'],
     build: false,
   },
   {
-    name: 'CJS TS minimal + biome + vitest',
-    flags: ['--ts', '--cjs', '--example', 'minimal', '--view', 'none', '--linter', 'biome', '--test', 'vitest'],
+    name: 'TS minimal + biome + vitest',
+    flags: ['--ts', '--example', 'minimal', '--view', 'none', '--linter', 'biome', '--test', 'vitest'],
     build: true,
   },
 ]

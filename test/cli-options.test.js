@@ -17,12 +17,6 @@ test('resolveOptions forwards the force flag', () => {
   assert.equal(resolveOptions({ force: true }, () => 'cli').force, true)
 })
 
-test('resolveOptions maps the module flags', () => {
-  assert.equal(resolveOptions({ esm: true }, () => 'cli').module, 'esm')
-  assert.equal(resolveOptions({ cjs: true }, () => 'cli').module, 'cjs')
-  assert.equal(resolveOptions({}, () => 'cli').module, undefined)
-})
-
 test('resolveOptions treats default-sourced git/install/docker as undefined', () => {
   const options = resolveOptions({ git: true, install: true, docker: true }, () => 'default')
   assert.equal(options.git, undefined)

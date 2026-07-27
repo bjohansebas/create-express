@@ -3,7 +3,6 @@ export function getContext(projectName, options) {
     projectName,
     cwd: undefined,
     language: options.language,
-    module: options.module,
     example: options.example,
     view: options.view,
     linter: options.linter,

@@ -216,44 +216,6 @@ test('handlebars view: uses the native hbs engine', async () => {
   }
 })
 
-test('CommonJS: rewrites JS sources and drops type:module', async () => {
-  const { context, cwd, pkg } = compose({ example: 'api', module: 'cjs' })
-  try {
-    await composeAction(context)
-
-    const app = readFileSync(join(cwd, 'app.js'), 'utf-8')
-    assert.match(app, /require\('express'\)/)
-    assert.match(app, /module\.exports/)
-    assert.ok(!('type' in pkg()), 'type:module must be dropped')
-  } finally {
-    rmSync(cwd, { recursive: true, force: true })
-  }
-})
-
-test('CommonJS + TypeScript: switches tsconfig to commonjs', async () => {
-  const { context, cwd } = compose({ example: 'api', module: 'cjs', typescript: true })
-  try {
-    await composeAction(context)
-
-    const tsconfig = JSON.parse(readFileSync(join(cwd, 'tsconfig.json'), 'utf-8'))
-    assert.equal(tsconfig.compilerOptions.module, 'commonjs')
-    assert.ok(!('allowImportingTsExtensions' in tsconfig.compilerOptions))
-    assert.match(readFileSync(join(cwd, 'server.ts'), 'utf-8'), /from '\.\/app'/)
-  } finally {
-    rmSync(cwd, { recursive: true, force: true })
-  }
-})
-
-test('CommonJS + Vitest: keeps the test file as ESM', async () => {
-  const { context, cwd } = compose({ example: 'api', module: 'cjs', test: 'vitest' })
-  try {
-    await composeAction(context)
-    assert.match(readFileSync(join(cwd, 'app.test.js'), 'utf-8'), /^import /m)
-  } finally {
-    rmSync(cwd, { recursive: true, force: true })
-  }
-})
-
 test('TypeScript + Mocha runs through tsx', async () => {
   const { context, cwd, pkg } = compose({ typescript: true, test: 'mocha' })
   try {
