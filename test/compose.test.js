@@ -5,7 +5,6 @@ import { join } from 'node:path'
 import { test } from 'node:test'
 import { fileURLToPath } from 'node:url'
 import composeAction from '../src/actions/compose.js'
-import { supportsNativeTypeStripping } from '../src/utils/node.js'
 
 const BASE_FRAGMENT = fileURLToPath(new URL('../templates/base', import.meta.url))
 
@@ -69,13 +68,7 @@ test('composes a full TypeScript web project (ejs views)', async () => {
     assert.ok('oxlint' in manifest.devDependencies)
     assert.ok('oxfmt' in manifest.devDependencies)
     assert.ok('typescript' in manifest.devDependencies)
-    // A native-capable Node uses `node --watch`; tsx stays for the test runner.
-    if (supportsNativeTypeStripping(process.versions.node)) {
-      assert.equal(manifest.scripts.dev, 'node --watch server.ts')
-    } else {
-      assert.equal(manifest.scripts.dev, 'tsx watch server.ts')
-    }
-    assert.ok('tsx' in manifest.devDependencies)
+    assert.equal(manifest.scripts.dev, 'node --watch server.ts')
     assert.equal(manifest.scripts.build, 'tsc')
   } finally {
     rmSync(cwd, { recursive: true, force: true })
@@ -107,7 +100,7 @@ test('composes a project with the Node.js test runner and no extra deps', async 
     assert.ok(!existsSync(join(cwd, 'app.test.js')))
 
     const manifest = pkg()
-    assert.equal(manifest.scripts.test, 'node --import tsx --test')
+    assert.equal(manifest.scripts.test, 'node --test')
     assert.ok(!('vitest' in (manifest.devDependencies ?? {})), 'node:test must not pull in vitest')
   } finally {
     rmSync(cwd, { recursive: true, force: true })
@@ -216,16 +209,13 @@ test('generates a README with the package manager and scripts', async () => {
   }
 })
 
-test('pins the running Node version in .nvmrc and devEngines', async () => {
+test('targets the latest LTS in .nvmrc and requires Node >=24 via devEngines', async () => {
   const { context, cwd, pkg } = compose({})
   try {
     await composeAction(context)
 
-    assert.equal(readFileSync(join(cwd, '.nvmrc'), 'utf-8').trim(), process.versions.node)
-
-    const { runtime } = pkg().devEngines
-    assert.equal(runtime.name, 'node')
-    assert.equal(runtime.version, `>=${process.versions.node}`)
+    assert.equal(readFileSync(join(cwd, '.nvmrc'), 'utf-8').trim(), 'lts/*')
+    assert.equal(pkg().devEngines.runtime.version, '>=24.0.0')
   } finally {
     rmSync(cwd, { recursive: true, force: true })
   }

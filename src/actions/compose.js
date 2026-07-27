@@ -12,7 +12,6 @@ import {
 import { extname, join } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { deepMerge, sortDependencies } from '../utils/merge.js'
-import { supportsNativeTypeStripping } from '../utils/node.js'
 
 const TEMPLATES_DIR = fileURLToPath(new URL('../../templates', import.meta.url))
 
@@ -117,34 +116,6 @@ function selectExampleTest(cwd, context) {
 }
 
 /**
- * TypeScript test files can't be run by `node --test` directly (native
- * type-stripping isn't available on older runners), so route them through tsx.
- */
-function useTsxForTests(manifest, context) {
-  if (!context.typescript || !manifest.scripts) {
-    return
-  }
-
-  manifest.scripts.test = 'node --import tsx --test'
-  manifest.scripts['test:watch'] = 'node --import tsx --test --watch'
-}
-
-/**
- * Use Node's native `--watch` for the TypeScript dev script when the running
- * Node can strip types (>=22.18). tsx stays either way — the test runner
- * always goes through it.
- */
-function useNativeTsWatch(manifest, context) {
-  if (!context.typescript || !manifest.scripts) {
-    return
-  }
-
-  if (supportsNativeTypeStripping(process.versions.node)) {
-    manifest.scripts.dev = 'node --watch server.ts'
-  }
-}
-
-/**
  * Build a README describing how to run the generated project, using the chosen
  * package manager and whatever scripts the project ended up with.
  */
@@ -216,19 +187,18 @@ export default async function composeAction(context) {
     }
   }
 
-  useTsxForTests(pkg.value, context)
-  useNativeTsWatch(pkg.value, context)
-
   const manifest = sortDependencies(pkg.value)
   manifest.name = context.projectName
 
-  // Pin the project to the Node version used to scaffold it.
+  // Generated projects rely on the current LTS line (native TS, node:test).
+  // Last key on purpose: oxfmt sorts package.json with devEngines at the end.
   manifest.devEngines = {
-    runtime: { name: 'node', version: `>=${process.versions.node}`, onFail: 'warn' },
+    runtime: { name: 'node', version: '>=24.0.0', onFail: 'warn' },
   }
 
   writeFileSync(join(context.cwd, 'package.json'), `${JSON.stringify(manifest, null, 2)}\n`)
-  writeFileSync(join(context.cwd, '.nvmrc'), `${process.versions.node}\n`)
+  // nvm/fnm resolve `lts/*` to the latest LTS at `nvm use` time.
+  writeFileSync(join(context.cwd, '.nvmrc'), 'lts/*\n')
   writeFileSync(join(context.cwd, 'README.md'), readme(context, manifest))
 
   console.log('Success!', `Project created (${describe(context)})`)
