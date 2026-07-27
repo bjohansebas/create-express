@@ -35,13 +35,6 @@ const LINTERS = [
   { value: 'none', name: 'None' },
 ]
 
-const TESTS = [
-  { value: 'none', name: 'None' },
-  { value: 'vitest', name: 'Vitest' },
-  { value: 'node', name: 'Node.js (node:test)' },
-  { value: 'mocha', name: 'Mocha' },
-]
-
 const DOCKER = [
   { value: false, name: 'No' },
   { value: true, name: 'Yes' },
@@ -98,12 +91,6 @@ export default async function selectFeaturesAction(context) {
     choices: LINTERS,
     message: 'Which linter do you want?',
     fallback: 'biome',
-  })
-
-  context.test = await resolveOption(context, 'test', {
-    choices: TESTS,
-    message: 'Add a test runner?',
-    fallback: 'none',
   })
 
   context.docker = await resolveOption(context, 'docker', {

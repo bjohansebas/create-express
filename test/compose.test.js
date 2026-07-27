@@ -17,7 +17,6 @@ function compose(overrides) {
     typescript: false,
     view: 'none',
     linter: 'none',
-    test: 'none',
     packageManager: 'npm',
     ...overrides,
   }
@@ -45,12 +44,11 @@ test('composes a bare JavaScript project', async () => {
   }
 })
 
-test('composes a full TypeScript project (ejs + biome + vitest)', async () => {
+test('composes a full TypeScript project (ejs + biome)', async () => {
   const { context, cwd, pkg } = compose({
     typescript: true,
     view: 'ejs',
     linter: 'biome',
-    test: 'vitest',
   })
   try {
     await composeAction(context)
@@ -71,15 +69,13 @@ test('composes a full TypeScript project (ejs + biome + vitest)', async () => {
     assert.ok('ejs' in manifest.dependencies)
     assert.ok('@biomejs/biome' in manifest.devDependencies)
     assert.ok('typescript' in manifest.devDependencies)
-    assert.ok('vitest' in manifest.devDependencies)
-    // ESM + a native-capable Node uses `node --watch`; tsx is then unused (vitest).
+    // A native-capable Node uses `node --watch`; tsx stays for the test runner.
     if (supportsNativeTypeStripping(process.versions.node)) {
       assert.equal(manifest.scripts.dev, 'node --watch server.ts')
-      assert.ok(!('tsx' in manifest.devDependencies), 'tsx should be dropped when unused')
     } else {
       assert.equal(manifest.scripts.dev, 'tsx watch server.ts')
-      assert.ok('tsx' in manifest.devDependencies)
     }
+    assert.ok('tsx' in manifest.devDependencies)
     assert.equal(manifest.scripts.build, 'tsc')
   } finally {
     rmSync(cwd, { recursive: true, force: true })
@@ -103,7 +99,7 @@ test('ignores node_modules present in a fragment', async () => {
 })
 
 test('composes a project with the Node.js test runner and no extra deps', async () => {
-  const { context, cwd, pkg } = compose({ typescript: true, test: 'node' })
+  const { context, cwd, pkg } = compose({ typescript: true })
   try {
     await composeAction(context)
 
@@ -190,7 +186,7 @@ test('mvc example: composes layers and keeps only the chosen view engine', async
 })
 
 test('selects the example-specific test and removes the staging dir', async () => {
-  const { context, cwd } = compose({ example: 'api', test: 'node' })
+  const { context, cwd } = compose({ example: 'api' })
   try {
     await composeAction(context)
 
@@ -211,16 +207,6 @@ test('handlebars view: uses the native hbs engine', async () => {
     assert.ok(existsSync(join(cwd, 'views/index.hbs')))
     assert.match(readFileSync(join(cwd, 'views.ts'), 'utf-8'), /'hbs'/)
     assert.ok('hbs' in pkg().dependencies)
-  } finally {
-    rmSync(cwd, { recursive: true, force: true })
-  }
-})
-
-test('TypeScript + Mocha runs through tsx', async () => {
-  const { context, cwd, pkg } = compose({ typescript: true, test: 'mocha' })
-  try {
-    await composeAction(context)
-    assert.match(pkg().scripts.test, /tsx/)
   } finally {
     rmSync(cwd, { recursive: true, force: true })
   }
@@ -252,7 +238,6 @@ test('generates a README with the package manager and scripts', async () => {
   const { context, cwd } = compose({
     typescript: true,
     linter: 'biome',
-    test: 'vitest',
     packageManager: 'pnpm',
   })
   try {
@@ -291,22 +276,6 @@ test('adds a Dockerfile and .dockerignore when docker is enabled', async () => {
 
     assert.ok(existsSync(join(cwd, 'Dockerfile')))
     assert.ok(existsSync(join(cwd, '.dockerignore')), '_dockerignore should be renamed')
-  } finally {
-    rmSync(cwd, { recursive: true, force: true })
-  }
-})
-
-test('composes a project with Mocha and its config file', async () => {
-  const { context, cwd, pkg } = compose({ test: 'mocha' })
-  try {
-    await composeAction(context)
-
-    assert.ok(existsSync(join(cwd, 'app.test.js')))
-    assert.ok(existsSync(join(cwd, '.mocharc.json')))
-
-    const manifest = pkg()
-    assert.equal(manifest.scripts.test, 'mocha')
-    assert.ok('mocha' in manifest.devDependencies)
   } finally {
     rmSync(cwd, { recursive: true, force: true })
   }

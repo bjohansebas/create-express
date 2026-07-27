@@ -21,23 +21,23 @@ function run(command, args, cwd) {
 // linter and every test runner.
 const COMBOS = [
   {
-    name: 'TS api + biome + vitest',
-    flags: ['--ts', '--example', 'api', '--view', 'none', '--linter', 'biome', '--test', 'vitest'],
+    name: 'TS api + biome',
+    flags: ['--ts', '--example', 'api', '--view', 'none', '--linter', 'biome'],
     build: true,
   },
   {
-    name: 'JS web + handlebars + eslint + node',
-    flags: ['--js', '--example', 'web', '--view', 'handlebars', '--linter', 'eslint', '--test', 'node'],
+    name: 'JS web + handlebars + eslint',
+    flags: ['--js', '--example', 'web', '--view', 'handlebars', '--linter', 'eslint'],
     build: false,
   },
   {
-    name: 'JS mvc + pug + oxlint + mocha',
-    flags: ['--js', '--example', 'mvc', '--view', 'pug', '--linter', 'oxlint', '--test', 'mocha'],
+    name: 'JS mvc + pug + oxlint',
+    flags: ['--js', '--example', 'mvc', '--view', 'pug', '--linter', 'oxlint'],
     build: false,
   },
   {
-    name: 'TS minimal + biome + vitest',
-    flags: ['--ts', '--example', 'minimal', '--view', 'none', '--linter', 'biome', '--test', 'vitest'],
+    name: 'TS minimal + biome',
+    flags: ['--ts', '--example', 'minimal', '--view', 'none', '--linter', 'biome'],
     build: true,
   },
 ]

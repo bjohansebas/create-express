@@ -35,7 +35,6 @@ test('getContext maps options and defaults yes to false', () => {
     language: 'ts',
     view: 'ejs',
     linter: 'biome',
-    test: 'vitest',
     git: true,
     install: false,
     packageManager: 'pnpm',
@@ -77,7 +76,6 @@ test('nextStepsAction prints cd/install/test lines when needed', () => {
     packageManager: 'pnpm',
     cwd: join(process.cwd(), 'sub-app'),
     install: false,
-    test: 'vitest',
   })
 
   const text = output()
@@ -91,13 +89,13 @@ test('nextStepsAction prints cd/install/test lines when needed', () => {
 
 test('nextStepsAction omits cd/install when in place and already installed', () => {
   const output = captureLog()
-  nextStepsAction({ packageManager: 'npm', cwd: process.cwd(), install: true, test: 'none' })
+  nextStepsAction({ packageManager: 'npm', cwd: process.cwd(), install: true })
 
   const text = output()
   assert.doesNotMatch(text, /cd /)
   assert.doesNotMatch(text, /install/)
   assert.match(text, /npm run dev/)
-  assert.doesNotMatch(text, /npm run test/)
+  assert.match(text, /npm run test/)
 })
 
 test('gitAction is a no-op when the directory is already a repository', async () => {
@@ -113,20 +111,19 @@ test('gitAction is a no-op when the directory is already a repository', async ()
 test('composeAction throws for a missing fragment', async () => {
   const dir = tmp()
   await assert.rejects(
-    composeAction({ cwd: dir, projectName: 'x', typescript: false, view: 'bogus', linter: 'none', test: 'none' }),
+    composeAction({ cwd: dir, projectName: 'x', typescript: false, view: 'bogus', linter: 'none' }),
     /Template fragment "view\/bogus" does not exist/,
   )
 })
 
 test('selectFeaturesAction with --yes applies the defaults', async () => {
-  const context = { language: undefined, view: undefined, linter: undefined, test: undefined, yes: true }
+  const context = { language: undefined, view: undefined, linter: undefined, yes: true }
   await selectFeaturesAction(context)
 
   assert.equal(context.language, 'ts')
   assert.equal(context.typescript, true)
   assert.equal(context.view, 'none')
   assert.equal(context.linter, 'biome')
-  assert.equal(context.test, 'none')
 })
 
 test('projectNameAction with --yes sanitizes an invalid basename', async () => {
@@ -158,40 +155,39 @@ test('projectNameAction with --force clears a non-empty directory but keeps .git
 })
 
 test('selectFeaturesAction defaults the view engine for the web starter', async () => {
-  const context = { example: 'web', language: 'ts', view: undefined, linter: 'none', test: 'none', yes: true }
+  const context = { example: 'web', language: 'ts', view: undefined, linter: 'none', yes: true }
   await selectFeaturesAction(context)
 
   assert.equal(context.view, 'ejs')
 })
 
 test('selectFeaturesAction keeps an explicit view engine for the web starter', async () => {
-  const context = { example: 'web', language: 'ts', view: 'pug', linter: 'none', test: 'none', yes: true }
+  const context = { example: 'web', language: 'ts', view: 'pug', linter: 'none', yes: true }
   await selectFeaturesAction(context)
 
   assert.equal(context.view, 'pug')
 })
 
 test('selectFeaturesAction rejects "none" as a view engine for the web starter', async () => {
-  const context = { example: 'web', language: 'ts', view: 'none', linter: 'none', test: 'none', yes: true }
+  const context = { example: 'web', language: 'ts', view: 'none', linter: 'none', yes: true }
 
   await assert.rejects(selectFeaturesAction(context), /Invalid value "none" for --view/)
 })
 
 test('selectFeaturesAction defaults the view engine for the mvc starter', async () => {
-  const context = { example: 'mvc', language: 'ts', view: undefined, linter: 'none', test: 'none', yes: true }
+  const context = { example: 'mvc', language: 'ts', view: undefined, linter: 'none', yes: true }
   await selectFeaturesAction(context)
 
   assert.equal(context.view, 'ejs')
 })
 
 test('selectFeaturesAction keeps options provided as flags', async () => {
-  const context = { language: 'js', view: 'pug', linter: undefined, test: undefined, yes: true }
+  const context = { language: 'js', view: 'pug', linter: undefined, yes: true }
   await selectFeaturesAction(context)
 
   assert.equal(context.language, 'js')
   assert.equal(context.view, 'pug')
   assert.equal(context.linter, 'biome')
-  assert.equal(context.test, 'none')
 })
 
 test('projectNameAction reuses an existing empty directory', async () => {

@@ -43,9 +43,7 @@ function fragmentsFor(context) {
   if (context.linter && context.linter !== 'none') {
     fragments.push(`linter/${context.linter}`)
   }
-  if (context.test && context.test !== 'none') {
-    fragments.push(`test/${context.test}`)
-  }
+  fragments.push('test/node')
   if (context.docker) {
     fragments.push('docker')
   }
@@ -155,7 +153,7 @@ function selectExampleTest(cwd, context) {
 }
 
 /**
- * TypeScript test files can't be run by `node --test`/mocha directly (native
+ * TypeScript test files can't be run by `node --test` directly (native
  * type-stripping isn't available on older runners), so route them through tsx.
  */
 function useTsxForTests(manifest, context) {
@@ -163,33 +161,22 @@ function useTsxForTests(manifest, context) {
     return
   }
 
-  if (context.test === 'node') {
-    manifest.scripts.test = 'node --import tsx --test'
-    manifest.scripts['test:watch'] = 'node --import tsx --test --watch'
-  } else if (context.test === 'mocha') {
-    manifest.scripts.test = 'mocha --node-option import=tsx'
-    manifest.scripts['test:watch'] = 'mocha --node-option import=tsx --watch'
-  }
+  manifest.scripts.test = 'node --import tsx --test'
+  manifest.scripts['test:watch'] = 'node --import tsx --test --watch'
 }
 
 /**
  * Use Node's native `--watch` for the TypeScript dev script when the running
- * Node can strip types (>=22.18). Drop `tsx` when neither the dev script nor
- * the test runner needs it.
+ * Node can strip types (>=22.18). tsx stays either way — the test runner
+ * always goes through it.
  */
 function useNativeTsWatch(manifest, context) {
   if (!context.typescript || !manifest.scripts) {
     return
   }
 
-  const native = supportsNativeTypeStripping(process.versions.node)
-  if (native) {
+  if (supportsNativeTypeStripping(process.versions.node)) {
     manifest.scripts.dev = 'node --watch server.ts'
-  }
-
-  const tsxNeeded = !native || context.test === 'node' || context.test === 'mocha'
-  if (!tsxNeeded && manifest.devDependencies) {
-    delete manifest.devDependencies.tsx
   }
 }
 
@@ -234,7 +221,7 @@ function describe(context) {
   const parts = [context.example ?? 'minimal', context.typescript ? 'TypeScript' : 'JavaScript', 'ESM']
   if (context.view && context.view !== 'none') parts.push(`${context.view} views`)
   if (context.linter && context.linter !== 'none') parts.push(context.linter)
-  if (context.test && context.test !== 'none') parts.push(context.test)
+  parts.push('node:test')
   return parts.join(', ')
 }
 

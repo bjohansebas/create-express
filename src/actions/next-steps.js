@@ -30,9 +30,7 @@ export default function nextStepsAction(context) {
     console.log(`  ${pm} install`)
   }
   console.log(`  ${run} dev`)
-  if (context.test && context.test !== 'none') {
-    console.log(`  ${run} test`)
-  }
+  console.log(`  ${run} test`)
 
   console.log(EXPRESS_LOGO)
 }
