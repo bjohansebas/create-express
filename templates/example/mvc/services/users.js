@@ -1,12 +1,9 @@
-const users = [
-  { id: 1, name: 'Ada Lovelace' },
-  { id: 2, name: 'Alan Turing' },
-]
+import { db } from '../db.js'
 
 export function findAllUsers() {
-  return users
+  return db.prepare('SELECT id, name FROM users ORDER BY id').all()
 }
 
 export function findUserById(id) {
-  return users.find((user) => user.id === id)
+  return db.prepare('SELECT id, name FROM users WHERE id = ?').get(id)
 }

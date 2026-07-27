@@ -1,18 +1,14 @@
 import { Router } from 'express'
+import { db } from '../db.js'
 
 export const usersRouter = Router()
 
-const users = [
-  { id: 1, name: 'Ada Lovelace' },
-  { id: 2, name: 'Alan Turing' },
-]
-
 usersRouter.get('/', (_req, res) => {
-  res.json(users)
+  res.json(db.prepare('SELECT id, name FROM users ORDER BY id').all())
 })
 
 usersRouter.get('/:id', (req, res, next) => {
-  const user = users.find((entry) => entry.id === Number(req.params.id))
+  const user = db.prepare('SELECT id, name FROM users WHERE id = ?').get(Number(req.params.id))
   if (!user) {
     next()
     return

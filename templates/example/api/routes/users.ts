@@ -1,5 +1,6 @@
 import type { NextFunction, Request, Response } from 'express'
 import { Router } from 'express'
+import { db } from '../db.ts'
 
 interface User {
   id: number
@@ -8,17 +9,14 @@ interface User {
 
 export const usersRouter = Router()
 
-const users: User[] = [
-  { id: 1, name: 'Ada Lovelace' },
-  { id: 2, name: 'Alan Turing' },
-]
-
 usersRouter.get('/', (_req: Request, res: Response) => {
+  const users = db.prepare('SELECT id, name FROM users ORDER BY id').all() as unknown as User[]
   res.json(users)
 })
 
 usersRouter.get('/:id', (req: Request, res: Response, next: NextFunction) => {
-  const user = users.find((entry) => entry.id === Number(req.params.id))
+  const statement = db.prepare('SELECT id, name FROM users WHERE id = ?')
+  const user = statement.get(Number(req.params.id)) as User | undefined
   if (!user) {
     next()
     return

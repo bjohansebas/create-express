@@ -59,10 +59,12 @@ Pick a starting point with `--example` (like Vite's templates). Each one is a
 working, realistic scaffold rather than a bare hello-world:
 
 - **`minimal`** — a single route returning `Hello, World!`.
-- **`api`** — a JSON REST API: a `routes/` router with a sample resource, a
-  request logger, body parsing, and a centralized 404 + error handler.
+- **`api`** — a JSON REST API: a `routes/` router with a sample resource backed
+  by SQLite (`node:sqlite`), a request logger, body parsing, and a centralized
+  404 + error handler.
 - **`web`** — a server-rendered app with EJS views, static assets and error pages.
-- **`mvc`** — a layered structure (routes / controllers / services) ready to grow.
+- **`mvc`** — a layered structure (routes / controllers / services) with a
+  SQLite-backed service, ready to grow.
 
 Examples compose with everything else, so `--example api --ts` gives you a
 typed, linted, tested REST API.
@@ -75,6 +77,9 @@ pick:
 - `app.(js|ts)` — the configured Express application (exported, so it is easy to test).
 - `server.(js|ts)` — boots the app and listens on `process.env.PORT` (default `3000`).
 - EJS views with a `views/` folder, for the examples that render server-side (`web`, `mvc`).
+- A zero-dependency SQLite database via Node's built-in `node:sqlite` in the
+  examples that store data (`api`, `mvc`) — in-memory by default, set `DB_PATH`
+  to a file to persist.
 - Oxlint for linting and oxfmt (the oxc formatter) preconfigured to match the
   generated code.
 - The built-in `node:test` runner with a test that exercises the chosen

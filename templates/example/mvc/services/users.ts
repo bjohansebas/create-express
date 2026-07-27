@@ -1,17 +1,14 @@
+import { db } from '../db.ts'
+
 export interface User {
   id: number
   name: string
 }
 
-const users: User[] = [
-  { id: 1, name: 'Ada Lovelace' },
-  { id: 2, name: 'Alan Turing' },
-]
-
 export function findAllUsers(): User[] {
-  return users
+  return db.prepare('SELECT id, name FROM users ORDER BY id').all() as unknown as User[]
 }
 
 export function findUserById(id: number): User | undefined {
-  return users.find((user) => user.id === id)
+  return db.prepare('SELECT id, name FROM users WHERE id = ?').get(id) as User | undefined
 }

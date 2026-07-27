@@ -15,5 +15,9 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# Local SQLite databases
+*.db
+*.sqlite
+
 # Misc
 .DS_Store
