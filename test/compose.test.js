@@ -16,7 +16,6 @@ function compose(overrides) {
     projectName: 'demo',
     typescript: false,
     view: 'none',
-    linter: 'none',
     packageManager: 'npm',
     ...overrides,
   }
@@ -33,7 +32,8 @@ test('composes a bare JavaScript project', async () => {
     assert.ok(existsSync(join(cwd, '.gitignore')), '_gitignore should be renamed to .gitignore')
     assert.ok(!existsSync(join(cwd, 'app.ts')))
     assert.ok(!existsSync(join(cwd, 'tsconfig.json')))
-    assert.ok(!existsSync(join(cwd, 'biome.json')))
+    assert.ok(existsSync(join(cwd, '.oxlintrc.json')))
+    assert.ok(existsSync(join(cwd, '.oxfmtrc.json')))
 
     const manifest = pkg()
     assert.equal(manifest.name, 'demo')
@@ -44,11 +44,10 @@ test('composes a bare JavaScript project', async () => {
   }
 })
 
-test('composes a full TypeScript project (ejs + biome)', async () => {
+test('composes a full TypeScript project (ejs)', async () => {
   const { context, cwd, pkg } = compose({
     typescript: true,
     view: 'ejs',
-    linter: 'biome',
   })
   try {
     await composeAction(context)
@@ -60,14 +59,15 @@ test('composes a full TypeScript project (ejs + biome)', async () => {
     assert.ok(!existsSync(join(cwd, 'server.js')))
 
     assert.ok(existsSync(join(cwd, 'tsconfig.json')))
-    assert.ok(existsSync(join(cwd, 'biome.json')))
+    assert.ok(existsSync(join(cwd, '.oxlintrc.json')))
     assert.ok(existsSync(join(cwd, 'app.test.ts')))
     assert.ok(existsSync(join(cwd, 'views/index.ejs')))
 
     const manifest = pkg()
     assert.ok('express' in manifest.dependencies)
     assert.ok('ejs' in manifest.dependencies)
-    assert.ok('@biomejs/biome' in manifest.devDependencies)
+    assert.ok('oxlint' in manifest.devDependencies)
+    assert.ok('oxfmt' in manifest.devDependencies)
     assert.ok('typescript' in manifest.devDependencies)
     // A native-capable Node uses `node --watch`; tsx stays for the test runner.
     if (supportsNativeTypeStripping(process.versions.node)) {
@@ -125,8 +125,9 @@ test('api example: scaffolds routes/middleware and strips @types for JavaScript'
 
     const manifest = pkg()
     assert.ok('morgan' in manifest.dependencies)
-    // The only devDependency was @types/morgan, dropped for a JS project.
-    assert.ok(!manifest.devDependencies, 'JS project should not keep @types/* packages')
+    // @types/morgan is dropped for a JS project; the linter tooling stays.
+    const typed = Object.keys(manifest.devDependencies).filter((dep) => dep.startsWith('@types/'))
+    assert.deepEqual(typed, [], 'JS project should not keep @types/* packages')
   } finally {
     rmSync(cwd, { recursive: true, force: true })
   }
@@ -212,32 +213,9 @@ test('handlebars view: uses the native hbs engine', async () => {
   }
 })
 
-test('eslint: picks the language-specific config and TS-only deps', async () => {
-  const ts = compose({ typescript: true, linter: 'eslint' })
-  try {
-    await composeAction(ts.context)
-    assert.ok(existsSync(join(ts.cwd, 'eslint.config.js')))
-    assert.ok(!existsSync(join(ts.cwd, 'typescript.js')) && !existsSync(join(ts.cwd, 'javascript.js')))
-    assert.match(readFileSync(join(ts.cwd, 'eslint.config.js'), 'utf-8'), /typescript-eslint/)
-    assert.ok('typescript-eslint' in ts.pkg().devDependencies)
-  } finally {
-    rmSync(ts.cwd, { recursive: true, force: true })
-  }
-
-  const js = compose({ linter: 'eslint' })
-  try {
-    await composeAction(js.context)
-    assert.doesNotMatch(readFileSync(join(js.cwd, 'eslint.config.js'), 'utf-8'), /typescript-eslint/)
-    assert.ok(!('typescript-eslint' in (js.pkg().devDependencies ?? {})))
-  } finally {
-    rmSync(js.cwd, { recursive: true, force: true })
-  }
-})
-
 test('generates a README with the package manager and scripts', async () => {
   const { context, cwd } = compose({
     typescript: true,
-    linter: 'biome',
     packageManager: 'pnpm',
   })
   try {
@@ -281,19 +259,18 @@ test('adds a Dockerfile and .dockerignore when docker is enabled', async () => {
   }
 })
 
-test('composes a JavaScript project with pug + eslint', async () => {
-  const { context, cwd, pkg } = compose({ view: 'pug', linter: 'eslint' })
+test('composes a JavaScript project with pug', async () => {
+  const { context, cwd, pkg } = compose({ view: 'pug' })
   try {
     await composeAction(context)
 
     assert.ok(existsSync(join(cwd, 'app.js')))
-    assert.ok(existsSync(join(cwd, 'eslint.config.js')))
     assert.ok(existsSync(join(cwd, 'views/index.pug')))
     assert.ok(!existsSync(join(cwd, 'app.ts')), 'TS files must be dropped in a JS project')
 
     const manifest = pkg()
     assert.ok('pug' in manifest.dependencies)
-    assert.ok('eslint' in manifest.devDependencies)
+    assert.ok('oxlint' in manifest.devDependencies)
   } finally {
     rmSync(cwd, { recursive: true, force: true })
   }

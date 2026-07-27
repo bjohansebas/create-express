@@ -5,7 +5,6 @@ export function getContext(projectName, options) {
     language: options.language,
     example: options.example,
     view: options.view,
-    linter: options.linter,
     docker: options.docker,
     git: options.git,
     install: options.install,

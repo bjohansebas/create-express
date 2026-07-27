@@ -17,27 +17,26 @@ function run(command, args, cwd) {
   return spawnSync(command, args, { cwd, encoding: 'utf-8', shell: process.platform === 'win32' })
 }
 
-// A spread of combinations covering both languages, every example, every
-// linter and every test runner.
+// A spread of combinations covering both languages and every example.
 const COMBOS = [
   {
-    name: 'TS api + biome',
-    flags: ['--ts', '--example', 'api', '--view', 'none', '--linter', 'biome'],
+    name: 'TS api',
+    flags: ['--ts', '--example', 'api', '--view', 'none'],
     build: true,
   },
   {
-    name: 'JS web + handlebars + eslint',
-    flags: ['--js', '--example', 'web', '--view', 'handlebars', '--linter', 'eslint'],
+    name: 'JS web + handlebars',
+    flags: ['--js', '--example', 'web', '--view', 'handlebars'],
     build: false,
   },
   {
-    name: 'JS mvc + pug + oxlint',
-    flags: ['--js', '--example', 'mvc', '--view', 'pug', '--linter', 'oxlint'],
+    name: 'JS mvc + pug',
+    flags: ['--js', '--example', 'mvc', '--view', 'pug'],
     build: false,
   },
   {
-    name: 'TS minimal + biome',
-    flags: ['--ts', '--example', 'minimal', '--view', 'none', '--linter', 'biome'],
+    name: 'TS minimal',
+    flags: ['--ts', '--example', 'minimal', '--view', 'none'],
     build: true,
   },
 ]
@@ -57,6 +56,9 @@ for (const combo of COMBOS) {
 
       const lint = run('npm', ['run', 'lint'], target)
       assert.equal(lint.status, 0, `lint failed:\n${lint.stdout}\n${lint.stderr}`)
+
+      const format = run('npm', ['run', 'format:check'], target)
+      assert.equal(format.status, 0, `format:check failed:\n${format.stdout}\n${format.stderr}`)
 
       const tested = run('npm', ['test'], target)
       assert.equal(tested.status, 0, `test failed:\n${tested.stdout}\n${tested.stderr}`)

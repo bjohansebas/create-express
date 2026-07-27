@@ -28,13 +28,6 @@ const WEB_VIEWS = [
 
 const VIEWS = [{ value: 'none', name: 'None (JSON API)' }, ...WEB_VIEWS]
 
-const LINTERS = [
-  { value: 'biome', name: 'Biome' },
-  { value: 'oxlint', name: 'Oxlint' },
-  { value: 'eslint', name: 'ESLint' },
-  { value: 'none', name: 'None' },
-]
-
 const DOCKER = [
   { value: false, name: 'No' },
   { value: true, name: 'Yes' },
@@ -85,12 +78,6 @@ export default async function selectFeaturesAction(context) {
     choices: rendersViews ? WEB_VIEWS : VIEWS,
     message: 'Which view engine do you want?',
     fallback: rendersViews ? 'ejs' : 'none',
-  })
-
-  context.linter = await resolveOption(context, 'linter', {
-    choices: LINTERS,
-    message: 'Which linter do you want?',
-    fallback: 'biome',
   })
 
   context.docker = await resolveOption(context, 'docker', {

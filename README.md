@@ -26,7 +26,7 @@ the project location and features. You can also pass a target directory and skip
 any prompt with flags:
 
 ```sh
-npm create @bjohansebas@latest my-app -- --ts --view ejs --linter biome --test vitest
+npm create @bjohansebas@latest my-app -- --ts --example api --view none
 ```
 
 ### Options
@@ -38,7 +38,6 @@ npm create @bjohansebas@latest my-app -- --ts --view ejs --linter biome --test v
 | `--js`, `--javascript`             | Use JavaScript.                                                                            |
 | `--example <name>`                 | Starter example: `minimal`, `api`, `web`, `mvc`.                                           |
 | `--view <engine>`                  | View engine: `none`, `ejs`, `pug`, `handlebars`.                                           |
-| `--linter <name>`                  | Linter: `none`, `biome`, `oxlint`, `eslint`.                                               |
 | `--docker` / `--no-docker`         | Add (or not) a `Dockerfile` and `.dockerignore`.                                           |
 | `--pm`, `--package-manager <name>` | Package manager: `npm`, `pnpm`, `yarn`, `bun` (defaults to the one that launched the CLI). |
 | `-g`, `--git` / `--no-git`         | Initialize (or not) a git repository.                                                      |
@@ -48,8 +47,8 @@ npm create @bjohansebas@latest my-app -- --ts --view ejs --linter biome --test v
 | `-h`, `--help`                     | Display the help message.                                                                  |
 
 Any option not provided as a flag is asked interactively, unless `--yes` is used,
-in which case the defaults are applied (TypeScript, Biome, no view engine, no test
-runner, git and install enabled). This makes the command safe to run in CI:
+in which case the defaults are applied (TypeScript, no view engine, git and
+install enabled). This makes the command safe to run in CI:
 
 ```sh
 npm create express@latest my-app -- --yes --no-install --no-git
@@ -66,8 +65,8 @@ working, realistic scaffold rather than a bare hello-world:
 - **`web`** — a server-rendered app with a view engine, static assets and error pages.
 - **`mvc`** — a layered structure (routes / controllers / services) ready to grow.
 
-Examples compose with everything else, so `--example api --ts --linter biome
---test vitest` gives you a typed, linted, tested REST API.
+Examples compose with everything else, so `--example api --ts` gives you a
+typed, linted, tested REST API.
 
 ## What you get
 
@@ -76,10 +75,11 @@ pick:
 
 - `app.(js|ts)` — the configured Express application (exported, so it is easy to test).
 - `server.(js|ts)` — boots the app and listens on `process.env.PORT` (default `3000`).
-- A view engine (EJS or Pug) with a `views/` folder, when selected.
-- A linter (Biome or ESLint) preconfigured to match the generated code.
-- A test runner (Vitest, the built-in `node:test`, or Mocha) with a test that
-  exercises the chosen example's own routes, when selected.
+- A view engine (EJS, Pug or Handlebars) with a `views/` folder, when selected.
+- Oxlint for linting and oxfmt (the oxc formatter) preconfigured to match the
+  generated code.
+- The built-in `node:test` runner with a test that exercises the chosen
+  example's own routes.
 
 ## Contributing
 

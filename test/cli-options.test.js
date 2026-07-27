@@ -30,12 +30,11 @@ test('resolveOptions forwards an explicit docker flag', () => {
 
 test('resolveOptions forwards explicit flags and passthrough fields', () => {
   const source = (name) => (name === 'git' ? 'cli' : 'default')
-  const options = resolveOptions({ git: false, install: true, view: 'ejs', linter: 'biome', yes: true }, source)
+  const options = resolveOptions({ git: false, install: true, view: 'ejs', yes: true }, source)
 
   assert.equal(options.git, false) // explicitly passed
   assert.equal(options.install, undefined) // defaulted -> dropped
   assert.equal(options.view, 'ejs')
-  assert.equal(options.linter, 'biome')
   assert.equal(options.yes, true)
 })
 

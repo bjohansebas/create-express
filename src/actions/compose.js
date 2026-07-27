@@ -40,9 +40,7 @@ function fragmentsFor(context) {
   if (context.view && context.view !== 'none') {
     fragments.push(`view/${context.view}`)
   }
-  if (context.linter && context.linter !== 'none') {
-    fragments.push(`linter/${context.linter}`)
-  }
+  fragments.push('linter/oxlint')
   fragments.push('test/node')
   if (context.docker) {
     fragments.push('docker')
@@ -119,21 +117,6 @@ function pruneViewTemplates(cwd, context) {
       rmSync(join(viewsDir, entry))
     }
   }
-}
-
-/**
- * The ESLint fragment ships a JavaScript and a TypeScript config; keep the one
- * matching the project language as `eslint.config.js`.
- */
-function selectEslintConfig(cwd, context) {
-  if (context.linter !== 'eslint') {
-    return
-  }
-
-  const keep = context.typescript ? 'typescript' : 'javascript'
-  const drop = context.typescript ? 'javascript' : 'typescript'
-  rmSync(join(cwd, `${drop}.js`), { force: true })
-  renameSync(join(cwd, `${keep}.js`), join(cwd, 'eslint.config.js'))
 }
 
 /**
@@ -220,8 +203,7 @@ function readme(context, manifest) {
 function describe(context) {
   const parts = [context.example ?? 'minimal', context.typescript ? 'TypeScript' : 'JavaScript', 'ESM']
   if (context.view && context.view !== 'none') parts.push(`${context.view} views`)
-  if (context.linter && context.linter !== 'none') parts.push(context.linter)
-  parts.push('node:test')
+  parts.push('oxlint', 'node:test')
   return parts.join(', ')
 }
 
@@ -240,15 +222,13 @@ export default async function composeAction(context) {
 
   consolidateLanguage(context.cwd, context.typescript)
   selectExampleTest(context.cwd, context)
-  selectEslintConfig(context.cwd, context)
   pruneViewTemplates(context.cwd, context)
 
   // A JavaScript project has no use for `@types/*` packages that fragments may
   // declare for their TypeScript variant.
   if (!context.typescript && pkg.value.devDependencies) {
     for (const dep of Object.keys(pkg.value.devDependencies)) {
-      // `@types/*` and typescript-eslint are TypeScript-only tooling.
-      if (dep.startsWith('@types/') || dep === 'typescript-eslint') {
+      if (dep.startsWith('@types/')) {
         delete pkg.value.devDependencies[dep]
       }
     }
