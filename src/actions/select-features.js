@@ -20,14 +20,6 @@ const EXAMPLES = [
   { value: 'mvc', name: 'Structured / MVC' },
 ]
 
-const WEB_VIEWS = [
-  { value: 'ejs', name: 'EJS' },
-  { value: 'pug', name: 'Pug' },
-  { value: 'handlebars', name: 'Handlebars' },
-]
-
-const VIEWS = [{ value: 'none', name: 'None (JSON API)' }, ...WEB_VIEWS]
-
 const DOCKER = [
   { value: false, name: 'No' },
   { value: true, name: 'Yes' },
@@ -70,14 +62,6 @@ export default async function selectFeaturesAction(context) {
     choices: EXAMPLES,
     message: 'Which starter example do you want?',
     fallback: 'minimal',
-  })
-
-  // The web and mvc starters render server-side views, so they need an engine.
-  const rendersViews = context.example === 'web' || context.example === 'mvc'
-  context.view = await resolveOption(context, 'view', {
-    choices: rendersViews ? WEB_VIEWS : VIEWS,
-    message: 'Which view engine do you want?',
-    fallback: rendersViews ? 'ejs' : 'none',
   })
 
   context.docker = await resolveOption(context, 'docker', {

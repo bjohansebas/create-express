@@ -15,7 +15,6 @@ function compose(overrides) {
     cwd,
     projectName: 'demo',
     typescript: false,
-    view: 'none',
     packageManager: 'npm',
     ...overrides,
   }
@@ -32,6 +31,7 @@ test('composes a bare JavaScript project', async () => {
     assert.ok(existsSync(join(cwd, '.gitignore')), '_gitignore should be renamed to .gitignore')
     assert.ok(!existsSync(join(cwd, 'app.ts')))
     assert.ok(!existsSync(join(cwd, 'tsconfig.json')))
+    assert.ok(!existsSync(join(cwd, 'views')), 'minimal must not ship views')
     assert.ok(existsSync(join(cwd, '.oxlintrc.json')))
     assert.ok(existsSync(join(cwd, '.oxfmtrc.json')))
 
@@ -44,10 +44,10 @@ test('composes a bare JavaScript project', async () => {
   }
 })
 
-test('composes a full TypeScript project (ejs)', async () => {
+test('composes a full TypeScript web project (ejs views)', async () => {
   const { context, cwd, pkg } = compose({
     typescript: true,
-    view: 'ejs',
+    example: 'web',
   })
   try {
     await composeAction(context)
@@ -149,7 +149,7 @@ test('api example: keeps @types packages for TypeScript', async () => {
 })
 
 test('web example: composes the views hook, static assets and error page', async () => {
-  const { context, cwd } = compose({ example: 'web', view: 'ejs', typescript: true })
+  const { context, cwd } = compose({ example: 'web', typescript: true })
   try {
     await composeAction(context)
 
@@ -166,8 +166,8 @@ test('web example: composes the views hook, static assets and error page', async
   }
 })
 
-test('mvc example: composes layers and keeps only the chosen view engine', async () => {
-  const { context, cwd } = compose({ example: 'mvc', view: 'ejs', typescript: true })
+test('mvc example: composes layers with ejs views', async () => {
+  const { context, cwd } = compose({ example: 'mvc', typescript: true })
   try {
     await composeAction(context)
 
@@ -176,10 +176,7 @@ test('mvc example: composes layers and keeps only the chosen view engine', async
     assert.ok(existsSync(join(cwd, 'services/users.ts')))
     assert.ok(existsSync(join(cwd, 'middleware/error-handler.ts')))
 
-    // The mvc users view ships in every engine; only the chosen one survives.
     assert.ok(existsSync(join(cwd, 'views/users.ejs')))
-    assert.ok(!existsSync(join(cwd, 'views/users.pug')))
-    assert.ok(!existsSync(join(cwd, 'views/users.hbs')))
     assert.ok(existsSync(join(cwd, 'views/index.ejs'))) // from the view fragment
   } finally {
     rmSync(cwd, { recursive: true, force: true })
@@ -195,19 +192,6 @@ test('selects the example-specific test and removes the staging dir', async () =
     assert.ok(!existsSync(join(cwd, 'tests')), 'the tests/ staging dir is removed')
     // The api test exercises the example's own routes, not just GET /.
     assert.match(readFileSync(join(cwd, 'app.test.js'), 'utf-8'), /\/api\/users/)
-  } finally {
-    rmSync(cwd, { recursive: true, force: true })
-  }
-})
-
-test('handlebars view: uses the native hbs engine', async () => {
-  const { context, cwd, pkg } = compose({ example: 'web', view: 'handlebars', typescript: true })
-  try {
-    await composeAction(context)
-
-    assert.ok(existsSync(join(cwd, 'views/index.hbs')))
-    assert.match(readFileSync(join(cwd, 'views.ts'), 'utf-8'), /'hbs'/)
-    assert.ok('hbs' in pkg().dependencies)
   } finally {
     rmSync(cwd, { recursive: true, force: true })
   }
@@ -259,17 +243,17 @@ test('adds a Dockerfile and .dockerignore when docker is enabled', async () => {
   }
 })
 
-test('composes a JavaScript project with pug', async () => {
-  const { context, cwd, pkg } = compose({ view: 'pug' })
+test('composes a JavaScript web project with ejs views', async () => {
+  const { context, cwd, pkg } = compose({ example: 'web' })
   try {
     await composeAction(context)
 
     assert.ok(existsSync(join(cwd, 'app.js')))
-    assert.ok(existsSync(join(cwd, 'views/index.pug')))
+    assert.ok(existsSync(join(cwd, 'views/index.ejs')))
     assert.ok(!existsSync(join(cwd, 'app.ts')), 'TS files must be dropped in a JS project')
 
     const manifest = pkg()
-    assert.ok('pug' in manifest.dependencies)
+    assert.ok('ejs' in manifest.dependencies)
     assert.ok('oxlint' in manifest.devDependencies)
   } finally {
     rmSync(cwd, { recursive: true, force: true })

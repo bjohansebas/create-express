@@ -71,10 +71,10 @@ test('prints "Aborted." when a prompt is interrupted', () => {
 test('rejects an invalid option value with a clean error', () => {
   const parent = mkdtempSync(join(tmpdir(), 'create-express-cli-'))
   try {
-    const result = run([join(parent, 'app'), '--view', 'svelte', '--yes', '--no-install', '--no-git'])
+    const result = run([join(parent, 'app'), '--example', 'svelte', '--yes', '--no-install', '--no-git'])
 
     assert.equal(result.status, 1)
-    assert.match(result.stderr, /Invalid value "svelte" for --view/)
+    assert.match(result.stderr, /Invalid value "svelte" for --example/)
   } finally {
     rmSync(parent, { recursive: true, force: true })
   }

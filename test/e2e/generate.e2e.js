@@ -21,22 +21,22 @@ function run(command, args, cwd) {
 const COMBOS = [
   {
     name: 'TS api',
-    flags: ['--ts', '--example', 'api', '--view', 'none'],
+    flags: ['--ts', '--example', 'api'],
     build: true,
   },
   {
-    name: 'JS web + handlebars',
-    flags: ['--js', '--example', 'web', '--view', 'handlebars'],
+    name: 'JS web',
+    flags: ['--js', '--example', 'web'],
     build: false,
   },
   {
-    name: 'JS mvc + pug',
-    flags: ['--js', '--example', 'mvc', '--view', 'pug'],
+    name: 'JS mvc',
+    flags: ['--js', '--example', 'mvc'],
     build: false,
   },
   {
     name: 'TS minimal',
-    flags: ['--ts', '--example', 'minimal', '--view', 'none'],
+    flags: ['--ts', '--example', 'minimal'],
     build: true,
   },
 ]

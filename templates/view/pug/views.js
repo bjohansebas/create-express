@@ -1,4 +1,0 @@
-export function setupViews(app) {
-  app.set('view engine', 'pug')
-  app.set('views', 'views')
-}

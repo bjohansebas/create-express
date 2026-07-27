@@ -26,7 +26,7 @@ the project location and features. You can also pass a target directory and skip
 any prompt with flags:
 
 ```sh
-npm create @bjohansebas@latest my-app -- --ts --example api --view none
+npm create @bjohansebas@latest my-app -- --ts --example api
 ```
 
 ### Options
@@ -37,7 +37,6 @@ npm create @bjohansebas@latest my-app -- --ts --example api --view none
 | `--ts`, `--typescript`             | Use TypeScript.                                                                            |
 | `--js`, `--javascript`             | Use JavaScript.                                                                            |
 | `--example <name>`                 | Starter example: `minimal`, `api`, `web`, `mvc`.                                           |
-| `--view <engine>`                  | View engine: `none`, `ejs`, `pug`, `handlebars`.                                           |
 | `--docker` / `--no-docker`         | Add (or not) a `Dockerfile` and `.dockerignore`.                                           |
 | `--pm`, `--package-manager <name>` | Package manager: `npm`, `pnpm`, `yarn`, `bun` (defaults to the one that launched the CLI). |
 | `-g`, `--git` / `--no-git`         | Initialize (or not) a git repository.                                                      |
@@ -47,7 +46,7 @@ npm create @bjohansebas@latest my-app -- --ts --example api --view none
 | `-h`, `--help`                     | Display the help message.                                                                  |
 
 Any option not provided as a flag is asked interactively, unless `--yes` is used,
-in which case the defaults are applied (TypeScript, no view engine, git and
+in which case the defaults are applied (TypeScript, the minimal example, git and
 install enabled). This makes the command safe to run in CI:
 
 ```sh
@@ -62,7 +61,7 @@ working, realistic scaffold rather than a bare hello-world:
 - **`minimal`** — a single route returning `Hello, World!`.
 - **`api`** — a JSON REST API: a `routes/` router with a sample resource, a
   request logger, body parsing, and a centralized 404 + error handler.
-- **`web`** — a server-rendered app with a view engine, static assets and error pages.
+- **`web`** — a server-rendered app with EJS views, static assets and error pages.
 - **`mvc`** — a layered structure (routes / controllers / services) ready to grow.
 
 Examples compose with everything else, so `--example api --ts` gives you a
@@ -75,7 +74,7 @@ pick:
 
 - `app.(js|ts)` — the configured Express application (exported, so it is easy to test).
 - `server.(js|ts)` — boots the app and listens on `process.env.PORT` (default `3000`).
-- A view engine (EJS, Pug or Handlebars) with a `views/` folder, when selected.
+- EJS views with a `views/` folder, for the examples that render server-side (`web`, `mvc`).
 - Oxlint for linting and oxfmt (the oxc formatter) preconfigured to match the
   generated code.
 - The built-in `node:test` runner with a test that exercises the chosen

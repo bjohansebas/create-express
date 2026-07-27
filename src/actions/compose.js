@@ -37,8 +37,9 @@ function fragmentsFor(context) {
   if (context.typescript) {
     fragments.push('typescript')
   }
-  if (context.view && context.view !== 'none') {
-    fragments.push(`view/${context.view}`)
+  // The web and mvc starters render server-side views; the rest stay JSON-only.
+  if (context.example === 'web' || context.example === 'mvc') {
+    fragments.push('view/ejs')
   }
   fragments.push('linter/oxlint')
   fragments.push('test/node')
@@ -95,26 +96,6 @@ function consolidateLanguage(dir, typescript) {
       }
     } else if (ext === '.ts' || ext === '.tsx' || entry === 'tsconfig.json') {
       rmSync(path)
-    }
-  }
-}
-
-const VIEW_EXTENSIONS = { ejs: '.ejs', pug: '.pug', handlebars: '.hbs' }
-
-/**
- * An example may ship a view template in every engine's syntax (e.g. mvc's
- * `users` view); keep only the one matching the chosen engine.
- */
-function pruneViewTemplates(cwd, context) {
-  const keep = VIEW_EXTENSIONS[context.view]
-  if (!keep) {
-    return
-  }
-
-  const viewsDir = join(cwd, 'views')
-  for (const entry of readdirSync(viewsDir)) {
-    if (extname(entry) !== keep) {
-      rmSync(join(viewsDir, entry))
     }
   }
 }
@@ -202,7 +183,6 @@ function readme(context, manifest) {
 
 function describe(context) {
   const parts = [context.example ?? 'minimal', context.typescript ? 'TypeScript' : 'JavaScript', 'ESM']
-  if (context.view && context.view !== 'none') parts.push(`${context.view} views`)
   parts.push('oxlint', 'node:test')
   return parts.join(', ')
 }
@@ -222,7 +202,6 @@ export default async function composeAction(context) {
 
   consolidateLanguage(context.cwd, context.typescript)
   selectExampleTest(context.cwd, context)
-  pruneViewTemplates(context.cwd, context)
 
   // A JavaScript project has no use for `@types/*` packages that fragments may
   // declare for their TypeScript variant.
