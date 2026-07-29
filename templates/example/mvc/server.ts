@@ -1,6 +1,7 @@
 import { existsSync } from 'node:fs'
 import { loadEnvFile } from 'node:process'
 import { app } from './app.ts'
+import { db } from './db.ts'
 import { migrator } from './migrate.ts'
 
 // Load variables from a local .env file when present.
@@ -22,6 +23,7 @@ for (const signal of ['SIGTERM', 'SIGINT'] as const) {
   process.on(signal, () => {
     console.log(`${signal} received: closing server`)
     server.close(() => {
+      db.close()
       console.log('Server closed')
     })
   })
