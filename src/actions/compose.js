@@ -163,6 +163,65 @@ function readme(context, manifest) {
   return `${lines.join('\n')}\n`
 }
 
+/**
+ * Build an AGENTS.md so coding agents pick up the project's conventions and
+ * the Express docs entry point, tailored to the chosen example and language.
+ */
+function agentsMd(context, manifest) {
+  const ts = context.typescript
+  const ext = ts ? 'ts' : 'js'
+  const hasDb = context.example === 'api' || context.example === 'mvc'
+  const hasViews = context.example === 'web' || context.example === 'mvc'
+  const pm = context.packageManager
+  const run = pm === 'npm' ? 'npm run' : pm
+
+  const lines = [
+    '# AGENTS.md',
+    '',
+    `An [Express](https://expressjs.com) 5 app: ${context.example ?? 'minimal'} starter, ${ts ? 'TypeScript' : 'JavaScript'}, ESM.`,
+    '',
+    'Express documentation in LLM-friendly form: https://expressjs.com/llms.txt',
+    '',
+    '## Commands',
+    '',
+  ]
+
+  for (const [name, command] of Object.entries(manifest.scripts)) {
+    lines.push(`- \`${run} ${name}\` — \`${command}\``)
+  }
+
+  lines.push(
+    '',
+    '## Practices',
+    '',
+    '- ESM only (`"type": "module"`): use `import`/`export`, never `require`.',
+  )
+  if (ts) {
+    lines.push(
+      '- Imports use explicit `.ts` extensions; Node runs the sources natively (no transpiler in dev or tests) and `tsc` only builds `dist/`.',
+    )
+  }
+  lines.push(
+    `- \`app.${ext}\` builds and exports the Express app; \`server.${ext}\` owns the cluster and boot. Tests import the app, never the server.`,
+    '- Lint with oxlint and format with oxfmt (single quotes, no semicolons); run both before finishing a change.',
+    `- Tests run on \`node:test\` from \`app.test.${ext}\` — extend it when routes or behavior change.`,
+  )
+  if (hasDb) {
+    lines.push(
+      `- SQLite through \`node:sqlite\`: \`db.${ext}\` only opens the connection (\`DB_PATH\`, in-memory by default). Schema changes are new files in \`migrations/\` applied by Umzug — never edit an already-applied migration.`,
+    )
+  }
+  if (hasViews) {
+    lines.push('- Server-rendered EJS views live in `views/`; static assets in `public/`.')
+  }
+  lines.push(
+    '- File paths (views, static assets, the database) are cwd-relative: run commands from the project root.',
+    '- Node >=24 (the latest LTS, resolved by `.nvmrc` via `lts/*`).',
+  )
+
+  return `${lines.join('\n')}\n`
+}
+
 function describe(context) {
   const parts = [context.example ?? 'minimal', context.typescript ? 'TypeScript' : 'JavaScript', 'ESM']
   parts.push('oxlint', 'node:test')
@@ -213,6 +272,7 @@ export default async function composeAction(context) {
   // nvm/fnm resolve `lts/*` to the latest LTS at `nvm use` time.
   writeFileSync(join(context.cwd, '.nvmrc'), 'lts/*\n')
   writeFileSync(join(context.cwd, 'README.md'), readme(context, manifest))
+  writeFileSync(join(context.cwd, 'AGENTS.md'), agentsMd(context, manifest))
 
   console.log('Success!', `Project created (${describe(context)})`)
 }

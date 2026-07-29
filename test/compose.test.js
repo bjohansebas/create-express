@@ -195,6 +195,32 @@ test('selects the example-specific test and removes the staging dir', async () =
   }
 })
 
+test('generates an AGENTS.md tailored to the example', async () => {
+  const minimal = compose({})
+  try {
+    await composeAction(minimal.context)
+
+    const doc = readFileSync(join(minimal.cwd, 'AGENTS.md'), 'utf-8')
+    assert.match(doc, /https:\/\/expressjs\.com\/llms\.txt/)
+    assert.match(doc, /ESM only/)
+    assert.doesNotMatch(doc, /migrations/, 'minimal has no database practices')
+  } finally {
+    rmSync(minimal.cwd, { recursive: true, force: true })
+  }
+
+  const api = compose({ example: 'api', typescript: true })
+  try {
+    await composeAction(api.context)
+
+    const doc = readFileSync(join(api.cwd, 'AGENTS.md'), 'utf-8')
+    assert.match(doc, /migrations/)
+    assert.match(doc, /`.ts` extensions/)
+    assert.match(doc, /npm run db:migrate/)
+  } finally {
+    rmSync(api.cwd, { recursive: true, force: true })
+  }
+})
+
 test('generates a README with the package manager and scripts', async () => {
   const { context, cwd } = compose({
     typescript: true,

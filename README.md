@@ -78,6 +78,8 @@ pick:
   `WEB_CONCURRENCY` to override) listening on `process.env.PORT` (default
   `3000`), with graceful shutdown.
 - EJS views with a `views/` folder, for the examples that render server-side (`web`, `mvc`).
+- An `AGENTS.md` with the project's conventions for AI coding agents, pointing
+  at Express's https://expressjs.com/llms.txt.
 - A `Dockerfile`, `.dockerignore` and `compose.yaml` — in `api`/`mvc` the compose
   file mounts a named volume and sets `DB_PATH` so the SQLite file persists.
 - A SQLite database via Node's built-in `node:sqlite` in the examples that
