@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "express": "5",
+    "helmet": "8",
     "zod": "4"
   },
   "devDependencies": {

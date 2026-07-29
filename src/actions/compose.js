@@ -210,6 +210,7 @@ function agentsMd(context, manifest) {
     `- Tests run on \`node:test\` from \`app.test.${ext}\` — extend it when routes or behavior change.`,
     '- Tests arrange their own data with `@faker-js/faker` through the app surface (routes or services) — never raw SQL in a test.',
     "- Request bodies are validated with zod schemas (`safeParse`) at the route/controller boundary; extend the schema when a route's input changes.",
+    '- Security headers come from helmet, registered as the first middleware — tune its options instead of removing it.',
   )
   if (hasDb) {
     lines.push(

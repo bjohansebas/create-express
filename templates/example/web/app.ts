@@ -1,11 +1,14 @@
 import type { NextFunction, Request, Response } from 'express'
 import express from 'express'
+import helmet from 'helmet'
 import logger from 'morgan'
 import { errorHandler } from './middleware/error-handler.ts'
 import { router } from './routes/index.ts'
 import { setupViews } from './views.ts'
 
 export const app = express()
+
+app.use(helmet())
 
 setupViews(app)
 

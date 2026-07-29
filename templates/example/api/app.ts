@@ -1,10 +1,13 @@
 import type { NextFunction, Request, Response } from 'express'
 import express from 'express'
+import helmet from 'helmet'
 import logger from 'morgan'
 import { errorHandler } from './middleware/error-handler.ts'
 import { usersRouter } from './routes/users.ts'
 
 export const app = express()
+
+app.use(helmet())
 
 app.use(logger('dev'))
 app.use(express.json())

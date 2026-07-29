@@ -1,9 +1,12 @@
 import express from 'express'
+import helmet from 'helmet'
 import logger from 'morgan'
 import { errorHandler } from './middleware/error-handler.js'
 import { usersRouter } from './routes/users.js'
 
 export const app = express()
+
+app.use(helmet())
 
 app.use(logger('dev'))
 app.use(express.json())
