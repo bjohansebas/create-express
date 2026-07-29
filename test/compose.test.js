@@ -36,7 +36,7 @@ test('composes a bare JavaScript project', async () => {
 
     const manifest = pkg()
     assert.equal(manifest.name, 'demo')
-    assert.deepEqual(Object.keys(manifest.dependencies), ['express'])
+    assert.deepEqual(Object.keys(manifest.dependencies), ['express', 'zod'])
     assert.equal(manifest.scripts.dev, 'node --watch server.js')
   } finally {
     rmSync(cwd, { recursive: true, force: true })

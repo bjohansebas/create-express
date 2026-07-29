@@ -42,6 +42,13 @@ test('creates and serves users', async () => {
     assert.deepEqual(found, user)
 
     assert.equal((await fetch(`${base}/api/users/999999`)).status, 404)
+
+    const bad = await fetch(`${base}/api/users`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ name: '' }),
+    })
+    assert.equal(bad.status, 400)
   } finally {
     server.close()
   }

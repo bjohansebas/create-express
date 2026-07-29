@@ -46,3 +46,30 @@ test('renders users created through the service', async () => {
     server.close()
   }
 })
+
+test('creates users through POST /users', async () => {
+  const name = faker.person.fullName()
+
+  const server = app.listen(0)
+  const base = `http://localhost:${server.address().port}`
+
+  try {
+    const created = await fetch(`${base}/users`, {
+      method: 'POST',
+      body: new URLSearchParams({ name }),
+      redirect: 'manual',
+    })
+    assert.equal(created.status, 302)
+
+    const page = await (await fetch(`${base}/users`)).text()
+    assert.ok(page.includes(escapeHtml(name)), `page should list ${name}`)
+
+    const bad = await fetch(`${base}/users`, {
+      method: 'POST',
+      body: new URLSearchParams({ name: '' }),
+    })
+    assert.equal(bad.status, 400)
+  } finally {
+    server.close()
+  }
+})

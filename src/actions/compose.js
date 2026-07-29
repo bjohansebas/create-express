@@ -208,11 +208,12 @@ function agentsMd(context, manifest) {
     `- \`app.${ext}\` builds and exports the Express app; \`server.${ext}\` owns the cluster and boot. Tests import the app, never the server.`,
     '- Lint with oxlint and format with oxfmt (single quotes, no semicolons); run both before finishing a change.',
     `- Tests run on \`node:test\` from \`app.test.${ext}\` — extend it when routes or behavior change.`,
+    '- Tests arrange their own data with `@faker-js/faker` through the app surface (routes or services) — never raw SQL in a test.',
+    "- Request bodies are validated with zod schemas (`safeParse`) at the route/controller boundary; extend the schema when a route's input changes.",
   )
   if (hasDb) {
     lines.push(
       `- SQLite through \`node:sqlite\`: \`db.${ext}\` only opens the connection (\`DB_PATH\`, in-memory by default). Schema changes are new files in \`migrations/\` applied by Umzug — never edit an already-applied migration.`,
-      '- Tests arrange their own data with `@faker-js/faker` through the app surface (routes or services) — never raw SQL in a test.',
     )
   }
   if (hasViews) {
