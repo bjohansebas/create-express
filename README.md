@@ -75,7 +75,9 @@ The generated project is composed from small fragments, so you only get what you
 pick:
 
 - `app.(js|ts)` — the configured Express application (exported, so it is easy to test).
-- `server.(js|ts)` — boots the app and listens on `process.env.PORT` (default `3000`).
+- `server.(js|ts)` — boots the app on a `node:cluster` (one worker per core,
+  `WEB_CONCURRENCY` to override) listening on `process.env.PORT` (default
+  `3000`), with graceful shutdown.
 - EJS views with a `views/` folder, for the examples that render server-side (`web`, `mvc`).
 - A SQLite database via Node's built-in `node:sqlite` in the examples that
   store data (`api`, `mvc`) — in-memory by default, set `DB_PATH` to a file to
