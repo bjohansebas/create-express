@@ -14,6 +14,17 @@ usersRouter.get('/', (_req: Request, res: Response) => {
   res.json(users)
 })
 
+usersRouter.post('/', (req: Request, res: Response) => {
+  const name = typeof req.body?.name === 'string' ? req.body.name.trim() : ''
+  if (!name) {
+    res.status(400).json({ error: 'name is required' })
+    return
+  }
+
+  const { lastInsertRowid } = db.prepare('INSERT INTO users (name) VALUES (?)').run(name)
+  res.status(201).json({ id: Number(lastInsertRowid), name })
+})
+
 usersRouter.get('/:id', (req: Request, res: Response, next: NextFunction) => {
   const statement = db.prepare('SELECT id, name FROM users WHERE id = ?')
   const user = statement.get(Number(req.params.id)) as User | undefined

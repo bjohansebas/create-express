@@ -209,6 +209,7 @@ function agentsMd(context, manifest) {
   if (hasDb) {
     lines.push(
       `- SQLite through \`node:sqlite\`: \`db.${ext}\` only opens the connection (\`DB_PATH\`, in-memory by default). Schema changes are new files in \`migrations/\` applied by Umzug — never edit an already-applied migration.`,
+      '- Tests arrange their own data with `@faker-js/faker` through the app surface (routes or services) — never raw SQL in a test.',
     )
   }
   if (hasViews) {

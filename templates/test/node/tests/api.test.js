@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
+import { faker } from '@faker-js/faker'
 import { app } from './app.js'
 import { migrator } from './migrate.js'
 
@@ -18,21 +19,29 @@ test('responds on its routes', async () => {
   }
 })
 
-test('serves the seeded users from SQLite', async () => {
+test('creates and serves users', async () => {
+  const name = faker.person.fullName()
+
   const server = app.listen(0)
   const base = `http://localhost:${server.address().port}`
 
   try {
+    const created = await fetch(`${base}/api/users`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ name }),
+    })
+    assert.equal(created.status, 201)
+    const user = await created.json()
+    assert.equal(user.name, name)
+
     const users = await (await fetch(`${base}/api/users`)).json()
-    assert.deepEqual(users, [
-      { id: 1, name: 'Ada Lovelace' },
-      { id: 2, name: 'Alan Turing' },
-    ])
+    assert.ok(users.some((entry) => entry.id === user.id && entry.name === name))
 
-    const user = await (await fetch(`${base}/api/users/1`)).json()
-    assert.deepEqual(user, { id: 1, name: 'Ada Lovelace' })
+    const found = await (await fetch(`${base}/api/users/${user.id}`)).json()
+    assert.deepEqual(found, user)
 
-    assert.equal((await fetch(`${base}/api/users/999`)).status, 404)
+    assert.equal((await fetch(`${base}/api/users/999999`)).status, 404)
   } finally {
     server.close()
   }

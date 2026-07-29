@@ -12,3 +12,8 @@ export function findAllUsers(): User[] {
 export function findUserById(id: number): User | undefined {
   return db.prepare('SELECT id, name FROM users WHERE id = ?').get(id) as User | undefined
 }
+
+export function createUser(name: string): User {
+  const { lastInsertRowid } = db.prepare('INSERT INTO users (name) VALUES (?)').run(name)
+  return { id: Number(lastInsertRowid), name }
+}

@@ -7,3 +7,8 @@ export function findAllUsers() {
 export function findUserById(id) {
   return db.prepare('SELECT id, name FROM users WHERE id = ?').get(id)
 }
+
+export function createUser(name) {
+  const { lastInsertRowid } = db.prepare('INSERT INTO users (name) VALUES (?)').run(name)
+  return { id: Number(lastInsertRowid), name }
+}
