@@ -202,6 +202,7 @@ test('generates an AGENTS.md tailored to the example', async () => {
 
     const doc = readFileSync(join(minimal.cwd, 'AGENTS.md'), 'utf-8')
     assert.match(doc, /https:\/\/expressjs\.com\/llms\.txt/)
+    assert.match(doc, /https:\/\/nodejs\.org\/llms\.txt/)
     assert.match(doc, /ESM only/)
     assert.doesNotMatch(doc, /migrations/, 'minimal has no database practices')
   } finally {
