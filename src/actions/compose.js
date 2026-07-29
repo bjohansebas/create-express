@@ -31,11 +31,14 @@ const IGNORED_ENTRIES = new Set(['node_modules'])
  * earlier ones.
  */
 function fragmentsFor(context) {
-  const fragments = ['base', `example/${context.example ?? 'minimal'}`]
+  // typescript goes before the example so an example can override server.ts
+  // (e.g. api/mvc run migrations before listening).
+  const fragments = ['base']
 
   if (context.typescript) {
     fragments.push('typescript')
   }
+  fragments.push(`example/${context.example ?? 'minimal'}`)
   // The web and mvc starters render server-side views; the rest stay JSON-only.
   if (context.example === 'web' || context.example === 'mvc') {
     fragments.push('view/ejs')
@@ -116,6 +119,16 @@ function selectExampleTest(cwd, context) {
 }
 
 /**
+ * Examples with a database declare `db:migrate` against `migrate.js`; a
+ * TypeScript project runs the `.ts` source directly instead.
+ */
+function useTypeScriptMigrateScript(manifest, context) {
+  if (context.typescript && manifest.scripts?.['db:migrate']) {
+    manifest.scripts['db:migrate'] = 'node migrate.ts'
+  }
+}
+
+/**
  * Build a README describing how to run the generated project, using the chosen
  * package manager and whatever scripts the project ended up with.
  */
@@ -186,6 +199,8 @@ export default async function composeAction(context) {
       delete pkg.value.devDependencies
     }
   }
+
+  useTypeScriptMigrateScript(pkg.value, context)
 
   const manifest = sortDependencies(pkg.value)
   manifest.name = context.projectName

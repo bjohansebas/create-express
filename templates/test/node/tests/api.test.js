@@ -1,6 +1,10 @@
 import assert from 'node:assert/strict'
 import { test } from 'node:test'
 import { app } from './app.js'
+import { migrator } from './migrate.js'
+
+// The server migrates on boot; tests arrange their own database.
+await migrator.up()
 
 test('responds on its routes', async () => {
   const server = app.listen(0)

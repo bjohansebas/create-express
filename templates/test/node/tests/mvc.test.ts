@@ -2,6 +2,10 @@ import assert from 'node:assert/strict'
 import type { AddressInfo } from 'node:net'
 import { test } from 'node:test'
 import { app } from './app.ts'
+import { migrator } from './migrate.ts'
+
+// The server migrates on boot; tests arrange their own database.
+await migrator.up()
 
 test('responds on its routes', async () => {
   const server = app.listen(0)

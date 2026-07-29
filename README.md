@@ -77,9 +77,10 @@ pick:
 - `app.(js|ts)` — the configured Express application (exported, so it is easy to test).
 - `server.(js|ts)` — boots the app and listens on `process.env.PORT` (default `3000`).
 - EJS views with a `views/` folder, for the examples that render server-side (`web`, `mvc`).
-- A zero-dependency SQLite database via Node's built-in `node:sqlite` in the
-  examples that store data (`api`, `mvc`) — in-memory by default, set `DB_PATH`
-  to a file to persist.
+- A SQLite database via Node's built-in `node:sqlite` in the examples that
+  store data (`api`, `mvc`) — in-memory by default, set `DB_PATH` to a file to
+  persist. Schema changes live in `migrations/` (one file per migration, run by
+  [Umzug](https://github.com/sequelize/umzug) on boot or via `db:migrate`).
 - Oxlint for linting and oxfmt (the oxc formatter) preconfigured to match the
   generated code.
 - The built-in `node:test` runner with a test that exercises the chosen

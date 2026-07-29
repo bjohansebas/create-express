@@ -118,6 +118,8 @@ test('api example: scaffolds routes/middleware and strips @types for JavaScript'
 
     const manifest = pkg()
     assert.ok('morgan' in manifest.dependencies)
+    assert.ok('umzug' in manifest.dependencies)
+    assert.equal(manifest.scripts['db:migrate'], 'node migrate.js')
     // @types/morgan is dropped for a JS project; the linter tooling stays.
     const typed = Object.keys(manifest.devDependencies).filter((dep) => dep.startsWith('@types/'))
     assert.deepEqual(typed, [], 'JS project should not keep @types/* packages')
@@ -133,9 +135,12 @@ test('api example: keeps @types packages for TypeScript', async () => {
 
     assert.ok(existsSync(join(cwd, 'app.ts')))
     assert.ok(existsSync(join(cwd, 'routes/users.ts')))
+    assert.ok(existsSync(join(cwd, 'db.ts')))
+    assert.ok(existsSync(join(cwd, 'migrate.ts')))
 
     const manifest = pkg()
     assert.ok('@types/morgan' in manifest.devDependencies)
+    assert.equal(manifest.scripts['db:migrate'], 'node migrate.ts')
   } finally {
     rmSync(cwd, { recursive: true, force: true })
   }
