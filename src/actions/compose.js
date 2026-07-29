@@ -31,13 +31,14 @@ const IGNORED_ENTRIES = new Set(['node_modules'])
  * earlier ones.
  */
 function fragmentsFor(context) {
-  // typescript goes before the example so an example can override server.ts
-  // (e.g. api/mvc run migrations before listening).
+  // typescript and docker go before the example so an example can override
+  // their files (e.g. api/mvc replace server.ts and compose.yaml).
   const fragments = ['base']
 
   if (context.typescript) {
     fragments.push('typescript')
   }
+  fragments.push('docker')
   fragments.push(`example/${context.example ?? 'minimal'}`)
   // The web and mvc starters render server-side views; the rest stay JSON-only.
   if (context.example === 'web' || context.example === 'mvc') {
@@ -45,9 +46,6 @@ function fragmentsFor(context) {
   }
   fragments.push('linter/oxlint')
   fragments.push('test/node')
-  if (context.docker) {
-    fragments.push('docker')
-  }
 
   return fragments
 }

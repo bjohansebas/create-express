@@ -20,11 +20,6 @@ const EXAMPLES = [
   { value: 'mvc', name: 'Structured / MVC' },
 ]
 
-const DOCKER = [
-  { value: false, name: 'No' },
-  { value: true, name: 'Yes' },
-]
-
 function assertChoice(key, value, choices) {
   if (value !== undefined && value !== null && !choices.some((choice) => choice.value === value)) {
     const flag = key.replace(/[A-Z]/g, (char) => `-${char.toLowerCase()}`)
@@ -62,12 +57,6 @@ export default async function selectFeaturesAction(context) {
     choices: EXAMPLES,
     message: 'Which starter example do you want?',
     fallback: 'minimal',
-  })
-
-  context.docker = await resolveOption(context, 'docker', {
-    choices: DOCKER,
-    message: 'Add a Dockerfile?',
-    fallback: false,
   })
 
   // Default to the package manager that launched the CLI, but let it be chosen.

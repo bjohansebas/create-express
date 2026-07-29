@@ -37,7 +37,6 @@ npm create @bjohansebas@latest my-app -- --ts --example api
 | `--ts`, `--typescript`             | Use TypeScript.                                                                            |
 | `--js`, `--javascript`             | Use JavaScript.                                                                            |
 | `--example <name>`                 | Starter example: `minimal`, `api`, `web`, `mvc`.                                           |
-| `--docker` / `--no-docker`         | Add (or not) a `Dockerfile` and `.dockerignore`.                                           |
 | `--pm`, `--package-manager <name>` | Package manager: `npm`, `pnpm`, `yarn`, `bun` (defaults to the one that launched the CLI). |
 | `-g`, `--git` / `--no-git`         | Initialize (or not) a git repository.                                                      |
 | `-i`, `--install` / `--no-install` | Install (or not) dependencies.                                                             |
@@ -79,6 +78,8 @@ pick:
   `WEB_CONCURRENCY` to override) listening on `process.env.PORT` (default
   `3000`), with graceful shutdown.
 - EJS views with a `views/` folder, for the examples that render server-side (`web`, `mvc`).
+- A `Dockerfile`, `.dockerignore` and `compose.yaml` — in `api`/`mvc` the compose
+  file mounts a named volume and sets `DB_PATH` so the SQLite file persists.
 - A SQLite database via Node's built-in `node:sqlite` in the examples that
   store data (`api`, `mvc`) — in-memory by default, set `DB_PATH` to a file to
   persist. Schema changes live in `migrations/` (one file per migration, run by

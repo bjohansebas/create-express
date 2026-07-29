@@ -226,13 +226,28 @@ test('targets the latest LTS in .nvmrc and requires Node >=24 via devEngines', a
   }
 })
 
-test('adds a Dockerfile and .dockerignore when docker is enabled', async () => {
-  const { context, cwd } = compose({ docker: true })
+test('always adds Dockerfile, .dockerignore and compose.yaml', async () => {
+  const { context, cwd } = compose({})
   try {
     await composeAction(context)
 
     assert.ok(existsSync(join(cwd, 'Dockerfile')))
     assert.ok(existsSync(join(cwd, '.dockerignore')), '_dockerignore should be renamed')
+    const compose_ = readFileSync(join(cwd, 'compose.yaml'), 'utf-8')
+    assert.doesNotMatch(compose_, /db-data/, 'minimal gets the generic compose file')
+  } finally {
+    rmSync(cwd, { recursive: true, force: true })
+  }
+})
+
+test('api example: compose.yaml persists the SQLite file in a volume', async () => {
+  const { context, cwd } = compose({ example: 'api' })
+  try {
+    await composeAction(context)
+
+    const compose_ = readFileSync(join(cwd, 'compose.yaml'), 'utf-8')
+    assert.match(compose_, /DB_PATH: \/data\/app.db/)
+    assert.match(compose_, /db-data:\/data/)
   } finally {
     rmSync(cwd, { recursive: true, force: true })
   }

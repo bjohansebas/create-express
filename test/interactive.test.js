@@ -110,13 +110,12 @@ test('project-name: re-prompts for a location when overwrite is declined', async
 })
 
 test('select-features: falls back to prompts when no flags are given', async () => {
-  // Prompt order: language, example, docker, package manager.
-  answers.select = ['js', 'api', false, 'pnpm']
+  // Prompt order: language, example, package manager.
+  answers.select = ['js', 'api', 'pnpm']
 
   const context = {
     language: undefined,
     example: undefined,
-    docker: undefined,
     packageManager: undefined,
     yes: false,
   }
@@ -125,7 +124,6 @@ test('select-features: falls back to prompts when no flags are given', async () 
   assert.equal(context.language, 'js')
   assert.equal(context.typescript, false)
   assert.equal(context.example, 'api')
-  assert.equal(context.docker, false)
   assert.equal(context.packageManager, 'pnpm')
 })
 

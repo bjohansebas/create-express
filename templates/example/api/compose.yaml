@@ -1,0 +1,15 @@
+# SQLite is a file, not a server, so there is no database container: the app
+# writes to a named volume and DB_PATH points the database file at it.
+services:
+  app:
+    build: .
+    ports:
+      - '3000:3000'
+    environment:
+      DB_PATH: /data/app.db
+    volumes:
+      - db-data:/data
+    restart: unless-stopped
+
+volumes:
+  db-data:

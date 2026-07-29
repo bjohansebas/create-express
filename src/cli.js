@@ -21,7 +21,6 @@ export function resolveOptions(options, getOptionSource) {
   return {
     language,
     example: options.example,
-    docker: explicit('docker'),
     packageManager: options.packageManager,
     git: explicit('git'),
     install: explicit('install'),

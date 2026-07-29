@@ -4,7 +4,6 @@ export function getContext(projectName, options) {
     cwd: undefined,
     language: options.language,
     example: options.example,
-    docker: options.docker,
     git: options.git,
     install: options.install,
     force: options.force ?? false,

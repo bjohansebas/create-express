@@ -46,8 +46,8 @@ for (const combo of COMBOS) {
     const root = mkdtempSync(join(tmpdir(), 'create-express-e2e-'))
     const target = join(root, 'app')
     try {
-      // `--yes` fills any axis not pinned by the combo flags (e.g. docker) with
-      // its default, keeping the run fully non-interactive.
+      // `--yes` fills any axis not pinned by the combo flags with its default,
+      // keeping the run fully non-interactive.
       const generate = run('node', [BIN, target, ...combo.flags, '--pm', 'npm', '--no-git', '--no-install', '--yes'])
       assert.equal(generate.status, 0, generate.stderr)
 
